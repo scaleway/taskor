@@ -190,7 +190,6 @@ loop:
 					continue
 				}
 				t.taskErrorHandler(&currentTask, err, taskToSend)
-				log.ErrorWithFields(fmt.Sprintf("Task failed with error: %v", err), currentTask)
 			} else {
 				// Run child task if no error
 				for _, childTask := range currentTask.ChildTasks {
@@ -248,8 +247,12 @@ func (t *Taskor) taskErrorHandler(taskToHandleError *task.Task, err error, taskT
 	// Retry if possible else call linked error task
 	if retry && t.retryTaskIfPossible(taskToHandleError, taskToSend) {
 		// the task has been retried
+		log.InfoWithFields(fmt.Sprintf("Retry: Task failed with error: %v", err), *taskToHandleError)
 		return
 	}
+
+	log.ErrorWithFields(fmt.Sprintf("Task failed with error: %v", err), *taskToHandleError)
+
 	// Call linked error task
 	if taskToHandleError.LinkError != nil {
 		// Do not use pointer here, to avoid infinite loop
