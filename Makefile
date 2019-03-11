@@ -1,13 +1,13 @@
 .PHONY: build build_proto fmt lint vet format build_run_grpc test mock
 
-GO_PACKAGES = $(shell go list ./... | grep -v vendor)
-GO_FILES = $(shell find . -name "*.go" | grep -v vendor | uniq)
+GO_PACKAGES = $(shell go list ./... )
+GO_FILES = $(shell find . -name "*.go" | uniq)
 
 build:
 	go build
 
 lint:
-	@go list ./... | grep -v /vendor/ | xargs -L1 golint
+	@go list ./...  | xargs -L1 golint
 fmt:
 	@goimports -w $(GO_FILES)
 vet:
@@ -16,7 +16,7 @@ vet:
 format: fmt lint vet
 
 test:
-	go test ./...
+	go test $(shell go list ./... | grep -v -e /example -e /runner/* -e /mock )
 
 build_example:
 	mkdir -p remove && find ./example  -name "*.go" -print0 |xargs -0 -I {} -n1 go build -o remove/{} {} && rm -rf remove
