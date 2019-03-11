@@ -6,7 +6,6 @@ import (
 
 	"github.com/scaleway/taskor"
 	"github.com/scaleway/taskor/runner/amqp"
-
 	"github.com/scaleway/taskor/task"
 )
 

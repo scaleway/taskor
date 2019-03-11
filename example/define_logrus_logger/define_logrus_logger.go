@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/sirupsen/logrus"
 	"github.com/scaleway/taskor"
 	"github.com/scaleway/taskor/runner/goroutine"
+	"github.com/sirupsen/logrus"
 )
 
 type logrusTaskor struct{}

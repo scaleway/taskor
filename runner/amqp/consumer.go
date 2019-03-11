@@ -3,10 +3,10 @@ package amqp
 import (
 	"time"
 
-	"github.com/streadway/amqp"
 	"github.com/scaleway/taskor/log"
 	"github.com/scaleway/taskor/serializer"
 	"github.com/scaleway/taskor/task"
+	"github.com/streadway/amqp"
 )
 
 func (t *RunnerAmqp) createConsumer() <-chan amqp.Delivery {

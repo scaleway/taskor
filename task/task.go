@@ -35,7 +35,7 @@ type Task struct {
 	DateDone time.Time
 	// MaxRetry max retry allowed, negative value mean infinit
 	MaxRetry int `log:"true"`
-	// Current try (start a 1)
+	// CurrentTry (starts at 1)
 	CurrentTry int `log:"true"`
 	// RetryOnError define is the task should retry if the task return err != nil
 	RetryOnError bool

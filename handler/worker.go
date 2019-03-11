@@ -265,7 +265,7 @@ func (t *Taskor) taskErrorHandler(taskToHandleError *task.Task, err error, taskT
 // retryTaskIfPossible retry task if possible return true if task is retry else false
 func (t *Taskor) retryTaskIfPossible(taskToRetry *task.Task, taskToSend chan<- task.Task) bool {
 	// Negative value mean infinite retry
-	if taskToRetry.MaxRetry >= 0 && taskToRetry.CurrentTry >= taskToRetry.MaxRetry {
+	if taskToRetry.MaxRetry >= 0 && taskToRetry.CurrentTry > taskToRetry.MaxRetry {
 		log.ErrorWithFields("Task has reached MaxRetry", taskToRetry)
 		return false
 	}

@@ -1,8 +1,9 @@
 package log
 
 import (
-	"github.com/scaleway/taskor/task"
 	"reflect"
+
+	"github.com/scaleway/taskor/task"
 )
 
 // GetFields return a map[string]interface of exportable fields for log
@@ -21,7 +22,8 @@ func GetFields(v interface{}) map[string]interface{} {
 		// If object is pointer and different nil recall function with value
 		return GetFields(sv.Elem().Interface())
 	}
-	return result}
+	return result
+}
 
 func getTaskFields(taskToLog task.Task) map[string]interface{} {
 	result := make(map[string]interface{})

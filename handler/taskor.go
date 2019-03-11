@@ -33,13 +33,13 @@ type Taskor struct {
 	runWorkerTaskAckWG      sync.WaitGroup
 	handlerTaskToRunWG      sync.WaitGroup
 	handlerTaskToProcessWG  sync.WaitGroup
-	handlerTaskToSendWG	sync.WaitGroup
+	handlerTaskToSendWG     sync.WaitGroup
 
 	// stopWorkerTaskProvider chan use to stop taskprovider routine
 	stopWorkerTaskProvider   chan bool
 	stopHandlerTaskToRun     chan bool
 	stopHandlerTaskToProcess chan bool
-	stopHandlerTaskToSend	chan bool
+	stopHandlerTaskToSend    chan bool
 }
 
 // New create a new Taskor instance

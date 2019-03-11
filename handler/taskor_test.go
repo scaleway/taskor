@@ -32,16 +32,16 @@ func TestTaskor_Handle(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:  "single task",
+			name:  "single task Handle",
 			tasks: []*task.Definition{&taskTest},
 		},
 		{
-			name:    "double same task",
+			name:    "double same task Handle",
 			tasks:   []*task.Definition{&taskTest, &taskTest},
 			wantErr: true,
 		},
 		{
-			name:    "double different task",
+			name:    "double different task Handle",
 			tasks:   []*task.Definition{&taskTest, &taskOtherTest},
 			wantErr: false,
 		},
@@ -74,12 +74,12 @@ func TestTaskor_GetHandled(t *testing.T) {
 		want  []*task.Definition
 	}{
 		{
-			name:  "single task",
+			name:  "single task GetHandled",
 			tasks: []*task.Definition{&taskTest},
 			want:  []*task.Definition{&taskTest},
 		},
 		{
-			name:  "double different task",
+			name:  "double different task GetHandled",
 			tasks: []*task.Definition{&taskTest, &taskOtherTest},
 			want:  []*task.Definition{&taskTest, &taskOtherTest},
 		},

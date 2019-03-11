@@ -1,9 +1,10 @@
 package taskor
 
 import (
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	"github.com/scaleway/taskor/mock"
-	"testing"
 )
 
 func Test_CreateTask(t *testing.T) {

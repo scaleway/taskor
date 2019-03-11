@@ -3,9 +3,9 @@ package amqp
 import (
 	"errors"
 
-	"github.com/streadway/amqp"
 	"github.com/scaleway/taskor/serializer"
 	"github.com/scaleway/taskor/task"
+	"github.com/streadway/amqp"
 )
 
 // Send send a new task in queue
