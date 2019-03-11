@@ -5,9 +5,10 @@
 package mock_taskor
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	task "github.com/scaleway/taskor/task"
-	reflect "reflect"
 )
 
 // MockTaskManager is a mock of TaskManager interface

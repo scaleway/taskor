@@ -50,6 +50,14 @@ func TestTaskor_retryTaskIfPossible(t *testing.T) {
 				MaxRetry:   2,
 			},
 		},
+		{
+			name: "task equal maxretry",
+			want: true,
+			taskToRetry: &task.Task{
+				CurrentTry: 2,
+				MaxRetry:   2,
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

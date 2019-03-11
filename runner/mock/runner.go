@@ -5,9 +5,10 @@
 package mock
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	task "github.com/scaleway/taskor/task"
-	reflect "reflect"
 )
 
 // MockRunner is a mock of Runner interface

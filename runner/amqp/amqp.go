@@ -3,12 +3,11 @@ package amqp
 import (
 	"fmt"
 	"sync"
-
 	"time"
 
-	"github.com/streadway/amqp"
 	"github.com/scaleway/taskor/log"
 	"github.com/scaleway/taskor/serializer"
+	"github.com/streadway/amqp"
 )
 
 // Time to wait before retry after queue error
