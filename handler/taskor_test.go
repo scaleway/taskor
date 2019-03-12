@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"reflect"
 	"testing"
 	"time"
 
@@ -32,16 +31,16 @@ func TestTaskor_Handle(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:  "single task Handle",
+			name:  "single task",
 			tasks: []*task.Definition{&taskTest},
 		},
 		{
-			name:    "double same task Handle",
+			name:    "double same task",
 			tasks:   []*task.Definition{&taskTest, &taskTest},
 			wantErr: true,
 		},
 		{
-			name:    "double different task Handle",
+			name:    "double different task",
 			tasks:   []*task.Definition{&taskTest, &taskOtherTest},
 			wantErr: false,
 		},
@@ -74,12 +73,12 @@ func TestTaskor_GetHandled(t *testing.T) {
 		want  []*task.Definition
 	}{
 		{
-			name:  "single task GetHandled",
+			name:  "single task",
 			tasks: []*task.Definition{&taskTest},
 			want:  []*task.Definition{&taskTest},
 		},
 		{
-			name:  "double different task GetHandled",
+			name:  "double different task",
 			tasks: []*task.Definition{&taskTest, &taskOtherTest},
 			want:  []*task.Definition{&taskTest, &taskOtherTest},
 		},
@@ -87,15 +86,26 @@ func TestTaskor_GetHandled(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var err error
 			taskManager, _ := New(mockRunner)
 			for _, task := range tt.tasks {
 				taskManager.Handle(task)
 			}
 
 			got := taskManager.GetHandled()
-			if err == nil && !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("taskManager.GetHandled() = %v, want %v", got, tt.want)
+			if len(got) != len(tt.want) {
+				t.Errorf("taskManager.GetHandled() len() are different = %v, want %v", len(got), len(tt.want))
+			}
+			for _, wantedTask := range tt.want {
+				found := false
+				for _, taskGot := range got {
+					if taskGot == wantedTask {
+						found = true
+						break
+					}
+				}
+				if !found {
+					t.Errorf("taskManager.GetHandled() task not found %s", wantedTask.Name)
+				}
 			}
 		})
 	}
