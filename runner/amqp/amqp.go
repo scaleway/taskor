@@ -81,15 +81,17 @@ func (t *RunnerAmqp) amqpConnect() error {
 	log.Info("Connection to RabbitMQ")
 	var err error
 
-	t.conn, err = amqp.Dial(t.amqpURL)
+	conn, err := amqp.Dial(t.amqpURL)
 	if err != nil {
 		return err
 	}
+	t.conn = conn
 
-	t.channel, err = t.conn.Channel()
+	channel, err := t.conn.Channel()
 	if err != nil {
 		return err
 	}
+	t.channel = channel
 
 	err = t.prepareQueue()
 	if err != nil {
