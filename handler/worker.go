@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/signal"
@@ -11,8 +12,15 @@ import (
 	"github.com/scaleway/taskor/task"
 )
 
+var errorWorkerAlreadyRunning = errors.New("worker is already start")
+
 // RunWorker run worker that wait new task and exec
 func (t *Taskor) RunWorker() error {
+	if t.workerRunning {
+		return errorWorkerAlreadyRunning
+	}
+	t.workerRunning = true
+
 	// taskToRun is the chan used when a task need to be run.
 	// Task will be analyze to know when it can be process
 	t.taskToRun = make(chan task.Task)
@@ -78,6 +86,14 @@ func (t *Taskor) RunWorker() error {
 
 // StopWorker stop all goroutine and runner worker
 func (t *Taskor) StopWorker() {
+	t.workerStopMutex.Lock()
+	defer t.workerStopMutex.Unlock()
+
+	if !t.workerRunning {
+		return
+	}
+	t.workerRunning = false
+
 	// First stop consume task and wait worker stop
 	log.Info("Stopping runner task provider")
 	t.stopWorkerTaskProvider <- true
@@ -106,6 +122,10 @@ func (t *Taskor) StopWorker() {
 	close(t.taskToRun)
 	close(t.taskToProcess)
 	close(t.taskToSend)
+	close(t.stopWorkerTaskProvider)
+	close(t.stopHandlerTaskToProcess)
+	close(t.stopHandlerTaskToRun)
+	close(t.stopHandlerTaskToSend)
 	log.Info("Worker stopped")
 }
 

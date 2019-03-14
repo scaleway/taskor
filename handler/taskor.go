@@ -40,6 +40,10 @@ type Taskor struct {
 	stopHandlerTaskToRun     chan bool
 	stopHandlerTaskToProcess chan bool
 	stopHandlerTaskToSend    chan bool
+
+	// boolean used to avoid stop a stopped worker
+	workerRunning   bool
+	workerStopMutex sync.Mutex
 }
 
 // New create a new Taskor instance

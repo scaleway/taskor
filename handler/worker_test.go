@@ -452,3 +452,17 @@ func TestTaskor_StartStopWorker(t *testing.T) {
 	ta.StopWorker()
 	timer.Stop()
 }
+
+func TestTaskor_StartWorkerAlreadyStart(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockRunner := runnerMock.NewMockRunner(ctrl)
+	mockRunner.EXPECT().Init().AnyTimes()
+
+	ta, _ := New(mockRunner)
+	ta.workerRunning = true
+	err := ta.RunWorker()
+	if err != errorWorkerAlreadyRunning {
+		t.Errorf("worker can be start twice, err %v", err)
+	}
+}
