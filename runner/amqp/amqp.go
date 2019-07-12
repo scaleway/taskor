@@ -149,18 +149,20 @@ func (t *RunnerAmqp) prepareQueue() error {
 
 func (t *RunnerAmqp) addProcessingTask(taskRunningID string, d *amqp.Delivery) {
 	t.mutexProcessingTask.Lock()
+	defer t.mutexProcessingTask.Unlock()
+
 	t.processingTask[taskRunningID] = d
-	t.mutexProcessingTask.Unlock()
 }
 
 func (t *RunnerAmqp) getAndDeleteProcessingTask(taskRunningID string) (*amqp.Delivery, error) {
 	t.mutexProcessingTask.Lock()
-	d := t.processingTask[taskRunningID]
+	defer t.mutexProcessingTask.Unlock()
 
+	d := t.processingTask[taskRunningID]
 	if d == nil {
 		return nil, fmt.Errorf("[error]Processing task unreachable : %s", taskRunningID)
 	}
+
 	delete(t.processingTask, taskRunningID)
-	t.mutexProcessingTask.Unlock()
 	return d, nil
 }
