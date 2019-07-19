@@ -224,6 +224,7 @@ loop:
 			}
 			// Inform runner task is finish and can be ack
 			taskDone <- currentTask
+			t.metric.TaskDoneWithSuccess++
 		}
 	}
 }
@@ -272,6 +273,7 @@ func (t *Taskor) taskErrorHandler(taskToHandleError *task.Task, err error, taskT
 	}
 
 	log.ErrorWithFields(fmt.Sprintf("Task failed with error: %v", err), *taskToHandleError)
+	t.metric.TaskDoneWithError++
 
 	// Call linked error task
 	if taskToHandleError.LinkError != nil {

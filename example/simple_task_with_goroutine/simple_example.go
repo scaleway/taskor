@@ -52,4 +52,10 @@ func main() {
 	time.Sleep(1 * time.Second)
 	taskManager.StopWorker()
 
+	// Display metrics
+	metric := taskManager.GetMetrics()
+	log.Printf("Task done with error %d", metric.TaskDoneWithError)
+	log.Printf("Task done without error %d", metric.TaskDoneWithSuccess)
+	log.Printf("Task sent %d", metric.TaskSent)
+
 }

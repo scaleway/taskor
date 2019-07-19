@@ -44,6 +44,9 @@ type Taskor struct {
 	// boolean used to avoid stop a stopped worker
 	workerRunning   bool
 	workerStopMutex sync.Mutex
+
+	// Metric
+	metric Metric
 }
 
 // New create a new Taskor instance
@@ -60,6 +63,7 @@ func New(runner runner.Runner) (*Taskor, error) {
 	}
 	// Init task list
 	t.taskList = make(map[string]*task.Definition)
+	t.metric = Metric{}
 	return &t, nil
 }
 
@@ -69,6 +73,7 @@ func (t *Taskor) Send(taskToSend *task.Task) error {
 	// Update queued date
 	taskToSend.DateQueued = time.Now()
 	log.InfoWithFields("Send task", taskToSend)
+	t.metric.TaskSent++
 	return t.runner.Send(taskToSend)
 }
 
@@ -89,4 +94,9 @@ func (t *Taskor) GetHandled() []*task.Definition {
 		handled = append(handled, def)
 	}
 	return handled
+}
+
+// GetMetrics return a copy of actual metrics
+func (t *Taskor) GetMetrics() Metric {
+	return t.metric
 }
