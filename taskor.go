@@ -20,6 +20,8 @@ type TaskManager interface {
 	RunWorker() error
 	// Stop worker
 	StopWorker()
+	// GetMetrics return current metric
+	GetMetrics() handler.Metric
 }
 
 // New create a new Taskor instance

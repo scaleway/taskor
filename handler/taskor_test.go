@@ -133,6 +133,10 @@ func TestTaskor_Send(t *testing.T) {
 		if time.Time.IsZero(testTask.DateQueued) {
 			t.Errorf("Task DateQueued is nil")
 		}
+
+		if taskManager.metric.TaskSent != 1 {
+			t.Errorf("Metric is not incremented")
+		}
 	})
 
 }

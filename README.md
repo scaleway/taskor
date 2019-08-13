@@ -137,6 +137,15 @@ taskorLogger.SetLogger(&LogrusTaskor{})
 ```
 See in example dir to see how to implement logrus
 
+### Get some metrics
+
+``` go
+metric := taskManager.GetMetrics()
+log.Printf("Task done with error %d", metric.TaskDoneWithError)
+log.Printf("Task done without error %d", metric.TaskDoneWithSuccess)
+log.Printf("Task sent %d", metric.TaskSent)
+```
+
 # Other links:
 * [HowItWorks](doc/HowItWorks.md)
 

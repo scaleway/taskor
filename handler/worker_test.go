@@ -126,16 +126,20 @@ func TestTaskor_taskErrorHandler(t *testing.T) {
 	defer ctrl.Finish()
 	mockRunner := runnerMock.NewMockRunner(ctrl)
 	mockRunner.EXPECT().Init().AnyTimes()
-	ta, _ := New(mockRunner)
 
 	t.Run("task no error", func(t *testing.T) {
+		ta, _ := New(mockRunner)
 		taskToSend := make(chan task.Task, 100)
 		testTask, _ := task.CreateTask("test", nil)
 		testTask.ID = "testtaskid"
 		ta.taskErrorHandler(testTask, nil, taskToSend)
+		if ta.metric.TaskDoneWithError != 0 {
+			t.Errorf("Metric is incremented")
+		}
 	})
 
 	t.Run("task retry error", func(t *testing.T) {
+		ta, _ := New(mockRunner)
 		taskToSend := make(chan task.Task, 100)
 		testTask, _ := task.CreateTask("test", nil)
 		testTask.ID = "testtaskid"
@@ -149,9 +153,13 @@ func TestTaskor_taskErrorHandler(t *testing.T) {
 		if sentTask.ID != testTask.ID {
 			t.Errorf("Wrong task ID: %s", sentTask.ID)
 		}
+		if ta.metric.TaskDoneWithError != 0 {
+			t.Errorf("Metric is incremented")
+		}
 	})
 
 	t.Run("task retryOnerror", func(t *testing.T) {
+		ta, _ := New(mockRunner)
 		taskToSend := make(chan task.Task, 100)
 		testTask, _ := task.CreateTask("test", nil)
 		testTask.ID = "testtaskid"
@@ -165,18 +173,26 @@ func TestTaskor_taskErrorHandler(t *testing.T) {
 		if sentTask.ID != testTask.ID {
 			t.Errorf("Wrong task ID: %s", sentTask.ID)
 		}
+		if ta.metric.TaskDoneWithError != 0 {
+			t.Errorf("Metric is incremented")
+		}
 	})
 
-	t.Run("task retryOnerror without error", func(t *testing.T) {
+	t.Run("task retryOnerror without error task", func(t *testing.T) {
+		ta, _ := New(mockRunner)
 		taskToSend := make(chan task.Task, 100)
 		testTask, _ := task.CreateTask("test", nil)
 		testTask.ID = "testtaskid"
 		testTask.MaxRetry = -1
 		testTask.RetryOnError = false
 		ta.taskErrorHandler(testTask, errors.New("task custom error"), taskToSend)
+		if ta.metric.TaskDoneWithError != 1 {
+			t.Errorf("Metric is not incremented")
+		}
 	})
 
-	t.Run("task no retry with error", func(t *testing.T) {
+	t.Run("task no retry with error task", func(t *testing.T) {
+		ta, _ := New(mockRunner)
 		taskToSend := make(chan task.Task, 100)
 		testTask, _ := task.CreateTask("test", nil)
 		testTask.ID = "testtaskid"
@@ -191,6 +207,9 @@ func TestTaskor_taskErrorHandler(t *testing.T) {
 		}
 		if sentTask.ParentTask.TaskName != "test" {
 			t.Errorf("Wrong parent task name: %s", sentTask.TaskName)
+		}
+		if ta.metric.TaskDoneWithError != 1 {
+			t.Errorf("Metric is not incremented")
 		}
 	})
 }
