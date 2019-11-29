@@ -231,17 +231,20 @@ loop:
 
 // execTask run task function
 func (t *Taskor) execTask(currentTask *task.Task) error {
-	Definition := t.taskList[currentTask.TaskName]
-	if Definition == nil {
-		log.ErrorWithFields("Task was pooled but was not register", currentTask)
-		return task.ErrNotRegisterd
+	definition := t.taskList[currentTask.TaskName]
+	if definition == nil {
+		definition = t.taskList[task.DefaultTaskName]
+		if definition == nil {
+			log.ErrorWithFields("Task was pooled but was not register", currentTask)
+			return task.ErrNotRegisterd
+		}
 	}
 
 	// Before Running task
 	currentTask.DateExecuted = time.Now()
 	currentTask.SetCurrentTry(currentTask.CurrentTry + 1)
 	// Execute Task
-	err := Definition.Run(currentTask)
+	err := definition.Run(currentTask)
 	if err != nil {
 		// Add error msg
 		currentTask.Error = err.Error()

@@ -7,6 +7,9 @@ import (
 	"github.com/scaleway/taskor/utils"
 )
 
+// DefaultTaskName - name of the default task, will be call when no task was register for the message
+const DefaultTaskName = "Default Task"
+
 const taskIDSize = 15
 
 // Definition struct used to define task
