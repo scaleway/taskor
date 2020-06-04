@@ -192,6 +192,17 @@ loop:
 
 // handleTaskToProcess is in charge to consume chan taskToProcess and exec task
 func (t *Taskor) handlerTaskToProcess(taskToProcess <-chan task.Task, taskDone chan<- task.Task, stop <-chan bool, taskToSend chan<- task.Task) {
+	// create a poll of workers to process task in concurrency
+	concurrency := t.runner.GetConcurrency()
+	pool := make(chan struct{}, concurrency)
+
+	// initialize worker pool with maxWorkers workers
+	go func() {
+		for i := 0; i < concurrency; i++ {
+			pool <- struct{}{}
+		}
+	}()
+
 loop:
 	for {
 		select {
@@ -202,29 +213,45 @@ loop:
 				// Chan was closed
 				break loop
 			}
-			// Waiting task from runner
-			err := t.execTask(&currentTask)
-			// handle error (need retry/ link error / .. )
-			if err != nil {
-				if err == task.ErrNotRegisterd {
-					continue
-				}
-				t.taskErrorHandler(&currentTask, err, taskToSend)
-			} else {
-				// Run child task if no error
-				for _, childTask := range currentTask.ChildTasks {
-					if childTask == nil {
-						continue
-					}
-					childT := *childTask
-					childT.ParentTask = &currentTask
-					taskToSend <- childT
-				}
-				log.InfoWithFields("Task is done without error", currentTask)
+
+			// Wait for a worker to be ready in the worker pool
+			if concurrency > 0 {
+				<-pool
 			}
-			// Inform runner task is finish and can be ack
-			taskDone <- currentTask
-			t.metric.TaskDoneWithSuccess++
+
+			// run task inside a go routine for parallel execution, add worker back to the pool (channel) at the end
+			go func() {
+				// Waiting task from runner
+				err := t.execTask(&currentTask)
+				// handle error (need retry/ link error / .. )
+				if err != nil {
+					if err == task.ErrNotRegisterd {
+						if concurrency > 0 {
+							pool <- struct{}{}
+						}
+						return
+					}
+					t.taskErrorHandler(&currentTask, err, taskToSend)
+				} else {
+					// Run child task if no error
+					for _, childTask := range currentTask.ChildTasks {
+						if childTask == nil {
+							continue
+						}
+						childT := *childTask
+						childT.ParentTask = &currentTask
+						taskToSend <- childT
+					}
+					log.InfoWithFields("Task is done without error", currentTask)
+				}
+				// Inform runner task is finish and can be ack
+				taskDone <- currentTask
+				t.metric.TaskDoneWithSuccess++
+				// add a worker to pool to start processing futur tasks
+				if concurrency > 0 {
+					pool <- struct{}{}
+				}
+			}()
 		}
 	}
 }

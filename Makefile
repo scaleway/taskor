@@ -24,7 +24,7 @@ build_example:
 mock:
 	rm -rf mock
 	mkdir -p mock
-	mockgen -source taskor.go -destination mock/taskor_mock.go
+	mockgen -source taskor.go -destination mock/taskor_mock.go -self_package github.com/scaleway/taskor/mock TaskManager
 
 	rm -rf runner/mock
 	mkdir runner/mock

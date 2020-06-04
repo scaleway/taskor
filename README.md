@@ -50,7 +50,15 @@ t.Send(MyTask)
 
 ### Running worker
 ``` go
-taskManager := taskor.New(runner.RunnerTypeAmqp, config)
+// With AMQP driver
+config := amqp.NewConfig()
+// Feel free to update your configuration
+config.AmqpURL = "amqp://guest:guest@localhost:5672/"
+config.ExchangeName = "myexchange"
+config.QueueName = "taskor_queue"
+config.Concurrency = 5
+amqpRunner := amqp.New(config)
+taskManager := taskor.New(amqpRunner)
 taskManager.Handle(MyTask)
 taskManager.RunWorker()
 ```
@@ -59,6 +67,22 @@ taskManager.RunWorker()
 See files in example directory
 
 ## Advanced features
+
+### Concurrency
+
+By default, each worker can only handle one task at the same time (wait for the current task to finish processing before processing the next one). With `Concurrency` property on your runner configuration, you can set a maximum number of workers processing tasks concurrently.
+
+Taskor uses goroutines to run multiple tasks in parallel. To define max number of workers processing tasks at the same time (done at worker initialization):
+``` go
+amqpConfig := amqp.NewConfig()
+// set Concurrency on runner configuration
+amqpConfig.Concurrency = 5
+
+amqpRunner := amqp.New(amqpConfig)
+taskManager := taskor.New(amqpRunner)
+// ...
+taskManager.RunWorker()
+```
 
 ### Retry
 To define MaxRetry allowed for a task:

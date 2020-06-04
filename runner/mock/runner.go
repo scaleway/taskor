@@ -33,6 +33,20 @@ func (m *MockRunner) EXPECT() *MockRunnerMockRecorder {
 	return m.recorder
 }
 
+// GetConcurrency mocks base method
+func (m *MockRunner) GetConcurrency() int {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetConcurrency")
+	ret0, _ := ret[0].(int)
+	return ret0
+}
+
+// GetConcurrency indicates an expected call of GetConcurrency
+func (mr *MockRunnerMockRecorder) GetConcurrency() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConcurrency", reflect.TypeOf((*MockRunner)(nil).GetConcurrency))
+}
+
 // Init mocks base method
 func (m *MockRunner) Init() error {
 	m.ctrl.T.Helper()

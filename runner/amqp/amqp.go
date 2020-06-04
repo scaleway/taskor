@@ -19,6 +19,7 @@ type RunnerAmqpConfig struct {
 	AmqpURL      string
 	ExchangeName string
 	QueueName    string
+	Concurrency  int
 }
 
 // NewConfig return a new RunnerAmqpConfig with default value
@@ -26,15 +27,17 @@ func NewConfig() RunnerAmqpConfig {
 	config := RunnerAmqpConfig{
 		AmqpURL:   "amqp://guest:guest@localhost:5672/",
 		QueueName: "taskor_queue",
+		Concurrency: 1,
 	}
 	return config
 }
 
 // RunnerAmqp struct
 type RunnerAmqp struct {
-	amqpURL    string
-	queueName  string
-	serializer serializer.Type
+	amqpURL     string
+	queueName   string
+	concurrency int
+	serializer  serializer.Type
 
 	// Amqp element
 	conn             *amqp.Connection
@@ -52,7 +55,13 @@ func New(amqpConfig RunnerAmqpConfig) *RunnerAmqp {
 	runner.amqpURL = amqpConfig.AmqpURL
 	runner.queueName = amqpConfig.QueueName
 	runner.serializer = serializer.TypeJSON
+	runner.concurrency = amqpConfig.Concurrency
 	return runner
+}
+
+// GetConcurrency - get concurrency configuration
+func (t *RunnerAmqp) GetConcurrency() int {
+	return t.concurrency
 }
 
 // Init connection

@@ -219,6 +219,7 @@ func TestTaskor_handlerTaskToProcess(t *testing.T) {
 	defer ctrl.Finish()
 	mockRunner := runnerMock.NewMockRunner(ctrl)
 	mockRunner.EXPECT().Init().AnyTimes()
+	mockRunner.EXPECT().GetConcurrency().Return(1).AnyTimes()
 	ta, _ := New(mockRunner)
 
 	var taskTest = task.Definition{
@@ -450,6 +451,7 @@ func TestTaskor_StartStopWorker(t *testing.T) {
 	defer ctrl.Finish()
 	mockRunner := runnerMock.NewMockRunner(ctrl)
 	mockRunner.EXPECT().Init().AnyTimes()
+	mockRunner.EXPECT().GetConcurrency().Return(1).AnyTimes()
 	mockRunner.EXPECT().RunWorkerTaskProvider(gomock.Any(), gomock.Any()).
 		Do(func(taskToRun chan task.Task, stop <-chan bool) {
 			<-stop
