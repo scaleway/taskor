@@ -213,11 +213,13 @@ loop:
 				// Chan was closed
 				break loop
 			}
-			// Executing task inside a go routine to allow for concurrency
+
+			// Wait for a worker to be ready in the worker pool
 			if concurrency > 0 {
 				<-pool
 			}
 
+			// run task inside a go routine for parallel execution, add worker back to the pool (channel) at the end
 			go func() {
 				// Waiting task from runner
 				err := t.execTask(&currentTask)
