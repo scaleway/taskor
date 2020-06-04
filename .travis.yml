@@ -2,14 +2,14 @@ language: go
 
 matrix:
   include:
-    - go:   "1.10"
     - go:   "1.11"
     - go:   "1.12"
+    - go:   "1.13"
 
 before_install:
   - go get -u golang.org/x/lint/golint
   - go get github.com/golang/mock/gomock
-  - go install github.com/golang/mock/mockgen
+  - GO111MODULE=on go get github.com/golang/mock/mockgen@latest
 
 script:
   - make lint
