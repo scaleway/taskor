@@ -59,6 +59,7 @@ func New(amqpConfig RunnerAmqpConfig) *RunnerAmqp {
 	return runner
 }
 
+// GetConcurrency - get concurrency configuration
 func (t *RunnerAmqp) GetConcurrency() int {
 	return t.concurrency
 }
