@@ -16,4 +16,6 @@ type Runner interface {
 	RunWorkerTaskProvider(taskToRun chan task.Task, stop <-chan bool) error
 	// RunWorkerTaskAck runner that ack message when a task is done. Should stop on chan close
 	RunWorkerTaskAck(taskDone <-chan task.Task)
+	// GetConcurrency return concurrency (max number of workers) configured for runner (allows parallel task processing)
+	GetConcurrency() int
 }

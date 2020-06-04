@@ -8,6 +8,7 @@ import (
 // RunnerConfig config use for goroutine runner
 type RunnerConfig struct {
 	MaxBufferedMessage int
+	Concurrency        int
 }
 
 // Runner runner that use goroutine, can be used without separate worker
@@ -22,6 +23,11 @@ func New(config RunnerConfig) *Runner {
 	g := Runner{}
 	g.config = config
 	return &g
+}
+
+// GetConcurrency retrieve concurrency settings for parallel task processing
+func (g *Runner) GetConcurrency() int {
+	return g.config.Concurrency
 }
 
 // Init channel
