@@ -13,7 +13,7 @@ func (t *RunnerAmqp) Send(task *task.Task) error {
 	var err error
 
 	if t.channel == nil {
-		return errors.New("Channel is not initialized")
+		return errors.New("channel is not initialized")
 	}
 
 	// Serialize Task with global serializer

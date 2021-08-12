@@ -78,7 +78,7 @@ loop:
 func (t *RunnerAmqp) RunWorkerTaskAck(taskDone <-chan task.Task) {
 	for {
 		taskToAck, ok := <-taskDone
-		if ok == false {
+		if !ok {
 			// Exit if channel is close
 			break
 		}

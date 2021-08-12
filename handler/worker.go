@@ -257,22 +257,32 @@ loop:
 }
 
 // execTask run task function
-func (t *Taskor) execTask(currentTask *task.Task) error {
+func (t *Taskor) execTask(currentTask *task.Task) (err error) {
 	Definition := t.taskList[currentTask.TaskName]
 	if Definition == nil {
 		log.ErrorWithFields("Task was pooled but was not register", currentTask)
 		return task.ErrNotRegisterd
 	}
 
+	defer func() {
+		// Handle panic in task execution, in case of panic the task is considered as in error
+		if r := recover(); r != nil {
+			currentTask.Error = fmt.Sprint(r)
+			err = errors.New(fmt.Sprint(r))
+			currentTask.DateDone = time.Now()
+		}
+	}()
+
 	// Before Running task
 	currentTask.DateExecuted = time.Now()
 	currentTask.SetCurrentTry(currentTask.CurrentTry + 1)
 	// Execute Task
-	err := Definition.Run(currentTask)
+	err = Definition.Run(currentTask)
 	if err != nil {
 		// Add error msg
 		currentTask.Error = err.Error()
 	}
+
 	// After task execution
 	currentTask.DateDone = time.Now()
 	return err
