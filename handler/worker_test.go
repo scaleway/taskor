@@ -121,6 +121,51 @@ func TestTaskor_execTask(t *testing.T) {
 	})
 }
 
+func TestTaskor_execTaskPanic(t *testing.T) {
+	// Init
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockRunner := runnerMock.NewMockRunner(ctrl)
+	mockRunner.EXPECT().Init().AnyTimes()
+	mockRunner.EXPECT().Send(gomock.Any()).AnyTimes()
+
+	ta, _ := New(mockRunner)
+	// Create ok task
+	errorTest := errors.New("unexpected error")
+	var taskTest = task.Definition{
+		Name: "test",
+		Run:  func(t *task.Task) error { panic("unexpected error") },
+	}
+	testTask, _ := task.CreateTask("test", nil)
+
+	// register Definition for "test"
+	ta.Handle(&taskTest)
+
+	t.Run("execTask", func(t *testing.T) {
+		err := ta.execTask(testTask)
+
+		if err.Error() != errorTest.Error() {
+			t.Errorf("Task does not return errorTest")
+		}
+
+		if testTask.ID == "" {
+			t.Errorf("Task ID is nil")
+		}
+
+		if testTask.CurrentTry != 1 {
+			t.Errorf("Task SetCurrentTry is not 1 : %d", testTask.CurrentTry)
+		}
+
+		if time.Time.IsZero(testTask.DateExecuted) {
+			t.Errorf("Task DateExecuted is nil")
+		}
+
+		if time.Time.IsZero(testTask.DateDone) {
+			t.Errorf("Task DateDone is nil")
+		}
+	})
+}
+
 func TestTaskor_taskErrorHandler(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
