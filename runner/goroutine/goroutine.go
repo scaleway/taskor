@@ -65,7 +65,6 @@ loop:
 // RunWorkerTaskAck runner that ack message when a task is done. Should stop on chan close
 func (g *Runner) RunWorkerTaskAck(taskDone <-chan task.Task) {
 	for {
-
 		_, ok := <-taskDone
 		if !ok {
 			break

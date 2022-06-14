@@ -19,15 +19,17 @@ type RunnerAmqpConfig struct {
 	AmqpURL      string
 	ExchangeName string
 	QueueName    string
+	QueueDurable bool
 	Concurrency  int
 }
 
 // NewConfig return a new RunnerAmqpConfig with default value
 func NewConfig() RunnerAmqpConfig {
 	config := RunnerAmqpConfig{
-		AmqpURL:   "amqp://guest:guest@localhost:5672/",
-		QueueName: "taskor_queue",
-		Concurrency: 1,
+		AmqpURL:      "amqp://guest:guest@localhost:5672/",
+		QueueName:    "taskor_queue",
+		QueueDurable: false,
+		Concurrency:  1,
 	}
 	return config
 }
@@ -35,8 +37,9 @@ func NewConfig() RunnerAmqpConfig {
 // RunnerAmqp struct
 type RunnerAmqp struct {
 	amqpURL     string
-	queueName   string
-	concurrency int
+	queueName    string
+	queueDurable bool
+	concurrency  int
 	serializer  serializer.Type
 
 	// Amqp element
@@ -54,6 +57,7 @@ func New(amqpConfig RunnerAmqpConfig) *RunnerAmqp {
 	runner := &RunnerAmqp{}
 	runner.amqpURL = amqpConfig.AmqpURL
 	runner.queueName = amqpConfig.QueueName
+	runner.queueDurable = amqpConfig.QueueDurable
 	runner.serializer = serializer.TypeJSON
 	runner.concurrency = amqpConfig.Concurrency
 	return runner
@@ -143,12 +147,12 @@ func (t *RunnerAmqp) handleAMQPFailure() {
 
 func (t *RunnerAmqp) prepareQueue() error {
 	_, err := t.channel.QueueDeclare(
-		t.queueName, // name
-		false,       // durable
-		false,       // delete when usused
-		false,       // exclusive
-		false,       // no-wait
-		nil,         // arguments
+		t.queueName,    // name
+		t.queueDurable, // queueDurable
+		false,          // delete when usused
+		false,          // exclusive
+		false,          // no-wait
+		nil,            // arguments
 	)
 	if err != nil {
 		return err
