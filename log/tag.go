@@ -32,6 +32,7 @@ func getTaskFields(taskToLog task.Task) map[string]interface{} {
 	result["TaskName"] = taskToLog.TaskName
 	result["MaxRetry"] = taskToLog.MaxRetry
 	result["CurrentTry"] = taskToLog.CurrentTry
+	result["Parameter"] = string(taskToLog.Parameter)
 
 	if taskToLog.ParentTask != nil {
 		result["ParentTask_ID"] = taskToLog.ParentTask.ID
