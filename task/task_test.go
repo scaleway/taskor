@@ -61,3 +61,42 @@ func TestTask_AddChild(t *testing.T) {
 	})
 
 }
+
+func TestTask_LastRetry(t *testing.T) {
+	tests := []struct {
+		name string
+		define func(*Task) *Task
+		want bool
+	}{
+		{
+			name: "no retries by default",
+			define: func(task *Task) *Task {
+				return task.SetMaxRetry(0)
+			},
+			want: false,
+	 	},
+		{
+			name: "no retry limit",
+			define: func(task *Task) *Task {
+				return task.SetMaxRetry(-1)
+			},
+			want: true,
+	 	},
+		{
+			name: "last retry",
+			define: func(task *Task) *Task {
+				return task.SetMaxRetry(2).SetCurrentTry(2)
+			},
+			want: false,
+	 	},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			task, _ := CreateTask("test", nil)
+			task = tt.define(task)
+			if task.LastRetry() != tt.want {
+				t.Errorf("Task.LastRetry() = %v, want %v", task.LastRetry(), tt.want)
+			}
+		})
+	}
+}

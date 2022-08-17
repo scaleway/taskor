@@ -131,3 +131,8 @@ func (t *Task) AddChild(childTask *Task) *Task {
 	t.ChildTasks = append(t.ChildTasks, childTask)
 	return t
 }
+
+// LastRetry determines if no more retries are allowed
+func (t *Task) LastRetry() bool {
+	return t.MaxRetry == 0 || t.CurrentTry >= t.MaxRetry
+}
