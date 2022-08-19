@@ -3,7 +3,7 @@ Task queue over RabbitMQ lib system.
 
 
 ## Installing
-It is easy to use Taskor. 
+It is easy to use Taskor.
 In first time, use `go get` to clone the latest version of the library.
 
 ```
@@ -40,7 +40,7 @@ var MyTask = &taskor.Definition{
 }
 ```
 
-### Send a task 
+### Send a task
 ``` go
 taskManager := taskor.New(runner.RunnerTypeAmqp, config)
 taskManager.Handle(MyTask)
@@ -120,6 +120,14 @@ var MyErrorTask = &task.Definition{
 }
 ```
 
+To sum up:
+
+* Taskor doesn't retry a task by default (`MaxRetry: 0`).
+* Taskor retries only if:
+  * `MaxRetry` is defined (use `-1` for infinite retries),
+  * a task returns `task.ErrTaskRetry`,
+  * a task returns any error when `RetryOnError` is `true`.
+
 ### LinkError
 LinkError is used to link a task that will be run when a task ending whith error and can't be retry.
 
@@ -182,7 +190,7 @@ go get github.com/golang/mock/gomock
 go get github.com/streadway/amqp
 ```
 ## Run Test
-``` 
+```
 make test
 ```
 
