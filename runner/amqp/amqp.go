@@ -13,6 +13,9 @@ import (
 // Time to wait before retry after queue error
 var errorRetryWaitTime = 1 * time.Second
 
+// Number of successive errors before reporting a connection error in logs
+var errorRetryThreshold = 5
+
 // RunnerAmqpConfig config use for amqp runner
 type RunnerAmqpConfig struct {
 	// AmqpUrl url of rabbitmq (ex: amqp://guest:guest@localhost:5672/)
@@ -44,6 +47,7 @@ type RunnerAmqp struct {
 
 	// Amqp element
 	conn             *amqp.Connection
+	connRetryCount   int
 	channel          *amqp.Channel
 	rabbitCloseError chan *amqp.Error
 	rabbitBlockError chan amqp.Blocking
@@ -130,10 +134,17 @@ func (t *RunnerAmqp) amqpRetryConnect() {
 	for {
 		err := t.amqpConnect()
 		if err != nil {
-			log.Error("Error on rabbitmq connection: " + err.Error())
+			t.connRetryCount++
+			if t.connRetryCount > errorRetryThreshold {
+				// Increase the severity after too many retries
+				log.Error("Error on rabbitmq connection: " + err.Error())
+			} else {
+				log.Warn("Error on rabbitmq connection: " + err.Error())
+			}
 			time.Sleep(errorRetryWaitTime)
 			continue
 		}
+		t.connRetryCount = 0
 		break
 	}
 }
@@ -144,13 +155,13 @@ func (t *RunnerAmqp) handleAMQPFailure() {
 	// Wait for a Close notification
 	case rabbitErr := <-t.rabbitCloseError:
 		if rabbitErr != nil {
-			log.Error("Received disconnection event")
+			log.Warn("Received disconnection event")
 			t.amqpRetryConnect()
 		}
 
 	// Handle block notification, reconnect ONLY on unblocking
 	case rabbitBlock := <-t.rabbitBlockError:
-		// We go blocked and recieved unblocking
+		// We got blocked and received unblocking
 		if !rabbitBlock.Active {
 			t.amqpRetryConnect()
 		}
