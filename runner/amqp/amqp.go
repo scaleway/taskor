@@ -36,16 +36,17 @@ func NewConfig() RunnerAmqpConfig {
 
 // RunnerAmqp struct
 type RunnerAmqp struct {
-	amqpURL     string
+	amqpURL      string
 	queueName    string
 	queueDurable bool
 	concurrency  int
-	serializer  serializer.Type
+	serializer   serializer.Type
 
 	// Amqp element
 	conn             *amqp.Connection
 	channel          *amqp.Channel
 	rabbitCloseError chan *amqp.Error
+	rabbitBlockError chan amqp.Blocking
 
 	// Map between taskId and message
 	processingTask      map[string]*amqp.Delivery
@@ -114,6 +115,10 @@ func (t *RunnerAmqp) amqpConnect() error {
 	// Go routine to handle connection failure
 	t.rabbitCloseError = make(chan *amqp.Error)
 	t.conn.NotifyClose(t.rabbitCloseError)
+
+	t.rabbitBlockError = make(chan amqp.Blocking)
+	t.conn.NotifyBlocked(t.rabbitBlockError)
+
 	go t.handleAMQPFailure()
 
 	log.Info("RabbitMq connection OK")
@@ -135,14 +140,21 @@ func (t *RunnerAmqp) amqpRetryConnect() {
 
 // handleAMQPFailure handle AMQP disconnection
 func (t *RunnerAmqp) handleAMQPFailure() {
-
+	select {
 	// Wait for a Close notification
-	rabbitErr := <-t.rabbitCloseError
-	if rabbitErr != nil {
-		log.Error("Received disconnection event")
-		t.amqpRetryConnect()
-	}
+	case rabbitErr := <-t.rabbitCloseError:
+		if rabbitErr != nil {
+			log.Error("Received disconnection event")
+			t.amqpRetryConnect()
+		}
 
+	// Handle block notification, reconnect ONLY on unblocking
+	case rabbitBlock := <-t.rabbitBlockError:
+		// We go blocked and recieved unblocking
+		if !rabbitBlock.Active {
+			t.amqpRetryConnect()
+		}
+	}
 }
 
 func (t *RunnerAmqp) prepareQueue() error {
