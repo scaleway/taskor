@@ -332,7 +332,9 @@ func (t *Taskor) retryTaskIfPossible(taskToRetry *task.Task, taskToSend chan<- t
 	// Duplicate task to avoid problem because we will repush task as a new one
 	newTask := *taskToRetry
 	// Adjust date when we need to retry
-	newTask.ETA = time.Now().Add(newTask.CountDownRetry)
+	if newTask.RetryMechanismFunc != nil {
+		newTask.ETA = time.Now().Add(newTask.RetryMechanismFunc.DurationBeforeRetry(taskToRetry.CurrentTry))
+	}
 	taskToSend <- newTask
 	return true
 }
