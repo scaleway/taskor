@@ -134,5 +134,8 @@ func (t *Task) AddChild(childTask *Task) *Task {
 
 // LastRetry determines if no more retries are allowed
 func (t *Task) LastRetry() bool {
-	return t.MaxRetry == 0 || t.CurrentTry >= t.MaxRetry
+	if t.MaxRetry == -1 {
+		return false
+	}
+	return t.CurrentTry >= t.MaxRetry
 }

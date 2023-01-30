@@ -64,31 +64,31 @@ func TestTask_AddChild(t *testing.T) {
 
 func TestTask_LastRetry(t *testing.T) {
 	tests := []struct {
-		name string
+		name   string
 		define func(*Task) *Task
-		want bool
+		want   bool
 	}{
 		{
 			name: "no retries by default",
 			define: func(task *Task) *Task {
 				return task.SetMaxRetry(0)
 			},
-			want: false,
-	 	},
+			want: true,
+		},
 		{
 			name: "no retry limit",
 			define: func(task *Task) *Task {
 				return task.SetMaxRetry(-1)
 			},
-			want: true,
-	 	},
+			want: false,
+		},
 		{
 			name: "last retry",
 			define: func(task *Task) *Task {
 				return task.SetMaxRetry(2).SetCurrentTry(2)
 			},
-			want: false,
-	 	},
+			want: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
