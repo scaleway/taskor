@@ -3,26 +3,39 @@ package task
 import (
 	"time"
 
+	"github.com/scaleway/taskor/log"
 	"github.com/scaleway/taskor/serializer"
+	"github.com/scaleway/taskor/task/retry"
 	"github.com/scaleway/taskor/utils"
 )
 
 const taskIDSize = 15
 
+var (
+	defaultRetryMechanism retry.RetryMechanism = retry.CountDownRetry(20 * time.Second)
+)
+
 // Definition struct used to define task
 type Definition struct {
-	Name string `log:"true"`
+	Name string
 	Run  func(task *Task) error
+}
+
+// LoggerFields fields used in logs
+func (d Definition) LoggerFields() map[string]interface{} {
+	result := make(map[string]interface{})
+	result["Name"] = d.Name
+	return result
 }
 
 // Task struct used to be send in queue
 type Task struct {
 	// TaskID string (doesn't change on retry)
-	ID string `log:"true"`
+	ID string
 	// RunningID Id of current running (change on retry)
-	RunningID string `log:"true"`
+	RunningID string
 	// TaskName name of task to execute
-	TaskName string `log:"true"`
+	TaskName string
 	// Parameter serialized task parameter
 	Parameter []byte
 	// Serialier Serializer to use to unserialize parameter
@@ -34,13 +47,14 @@ type Task struct {
 	// DateDone date the task was done (end of execution)
 	DateDone time.Time
 	// MaxRetry max retry allowed, negative value mean infinit
-	MaxRetry int `log:"true"`
+	MaxRetry int
 	// CurrentTry (starts at 1)
-	CurrentTry int `log:"true"`
+	CurrentTry int
 	// RetryOnError define is the task should retry if the task return err != nil
 	RetryOnError bool
-	// CountDownRetry duration to wait before retry
-	CountDownRetry time.Duration
+	// RetryMechanism Interface to implement different method
+	// to calculate duration to wait before retry
+	RetryMechanism retry.RetryMechanism
 	// ETA time after the task can be exec
 	ETA time.Time
 	// Error last error that was return by the task
@@ -51,6 +65,27 @@ type Task struct {
 	ChildTasks []*Task
 	// ParentTask access to the parent task
 	ParentTask *Task
+}
+
+// LoggerFields fields used in logs
+func (t Task) LoggerFields() map[string]interface{} {
+	result := make(map[string]interface{})
+	result["ID"] = t.ID
+	result["RunningID"] = t.RunningID
+	result["TaskName"] = t.TaskName
+	result["MaxRetry"] = t.MaxRetry
+	result["CurrentTry"] = t.CurrentTry
+
+	if t.ParentTask != nil {
+		result["ParentTask_ID"] = t.ParentTask.ID
+		result["ParentTask_RunningID"] = t.ParentTask.RunningID
+		result["ParentTask_Name"] = t.ParentTask.TaskName
+	}
+
+	if t.LinkError != nil {
+		result["ErrorTask_Name"] = t.LinkError.TaskName
+	}
+	return result
 }
 
 // CreateTask create a new task without running it
@@ -69,7 +104,7 @@ func CreateTask(taskName string, param interface{}) (*Task, error) {
 		// Default is don't retry
 		MaxRetry: 0,
 		// Wait 20 second before retry
-		CountDownRetry: 20 * time.Second,
+		RetryMechanism: defaultRetryMechanism,
 		// Task can be exec starting now
 		ETA: time.Now(),
 		ID:  utils.GenerateRandString(taskIDSize),
@@ -107,7 +142,14 @@ func (t *Task) SetRetryOnError(v bool) *Task {
 
 // SetCountDownRetry define time to wait before retry
 func (t *Task) SetCountDownRetry(duration time.Duration) *Task {
-	t.CountDownRetry = duration
+	log.Warn("SetCountDownRetry function is deprecated: use SetRetryMechanism(...) instead")
+	t.RetryMechanism = retry.CountDownRetry(duration)
+	return t
+}
+
+// SetRetryMechanism define algorithm to calculate duration to wait before retry
+func (t *Task) SetRetryMechanism(mechanismFunc retry.RetryMechanism) *Task {
+	t.RetryMechanism = mechanismFunc
 	return t
 }
 

@@ -1,8 +1,58 @@
 package task
 
 import (
+	"reflect"
 	"testing"
 )
+
+var fixtureTask, _ = CreateTask("test", nil)
+
+func Test_Task_LoggerFields(t *testing.T) {
+	t.Run("simple task", func(t *testing.T) {
+		expected := map[string]interface{}{
+			"ID":         fixtureTask.ID,
+			"RunningID":  fixtureTask.RunningID,
+			"TaskName":   fixtureTask.TaskName,
+			"MaxRetry":   fixtureTask.MaxRetry,
+			"CurrentTry": fixtureTask.CurrentTry,
+		}
+		got := (*fixtureTask).LoggerFields()
+		if !reflect.DeepEqual(got, expected) {
+			t.Errorf("Task.LoggerFields() got %v, want %v", got, expected)
+		}
+	})
+
+	t.Run("*Task with parents", func(t *testing.T) {
+		childTask, _ := CreateTask("child", nil)
+		childTask.ParentTask = fixtureTask
+		expected := map[string]interface{}{
+			"ID":                   childTask.ID,
+			"RunningID":            childTask.RunningID,
+			"TaskName":             childTask.TaskName,
+			"MaxRetry":             childTask.MaxRetry,
+			"CurrentTry":           childTask.CurrentTry,
+			"ParentTask_ID":        fixtureTask.ID,
+			"ParentTask_RunningID": fixtureTask.RunningID,
+			"ParentTask_Name":      fixtureTask.TaskName,
+		}
+		got := childTask.LoggerFields()
+		if !reflect.DeepEqual(got, expected) {
+			t.Errorf("Task.LoggerFields() got %v, want %v", got, expected)
+		}
+	})
+}
+
+func Test_Definition_LoggerFields(t *testing.T) {
+	definition := Definition{
+		Name: "test",
+		Run:  func(t *Task) error { return nil },
+	}
+	expected := map[string]interface{}{"Name": definition.Name}
+	got := definition.LoggerFields()
+	if !reflect.DeepEqual(got, expected) {
+		t.Errorf("Definition.LoggerFields() got %v, want %v", got, expected)
+	}
+}
 
 func Test_CreateTask(t *testing.T) {
 

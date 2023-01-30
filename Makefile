@@ -7,7 +7,9 @@ build:
 	go build
 
 lint:
-	@go list ./...  | xargs -L1 golint
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
+	golangci-lint run ./...
+
 fmt:
 	@goimports -w $(GO_FILES)
 vet:
@@ -16,7 +18,9 @@ vet:
 format: fmt lint vet
 
 test:
-	go test $(shell go list ./... | grep -v -e /example -e /runner/* -e /mock )
+	@go install github.com/golang/mock/gomock
+	@go install github.com/golang/mock/mockgen@latest
+	go test $(shell go list ./... | grep -v -e /example -e /runner/* -e /mock)
 
 build_example:
 	mkdir -p remove && find ./example  -name "*.go" -print0 |xargs -0 -I {} -n1 go build -o remove/{} {} && rm -rf remove
