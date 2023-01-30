@@ -3,6 +3,7 @@ package task
 import (
 	"time"
 
+	"github.com/scaleway/taskor/log"
 	"github.com/scaleway/taskor/serializer"
 	"github.com/scaleway/taskor/task/retry"
 	"github.com/scaleway/taskor/utils"
@@ -139,8 +140,7 @@ func (t *Task) SetRetryOnError(v bool) *Task {
 
 // SetCountDownRetry define time to wait before retry
 func (t *Task) SetCountDownRetry(duration time.Duration) *Task {
-	// TODO(acamilleri): add log to warn on deprecated func, need a refactoring because this cause an import cycle
-	// log.Warn("SetCountDownRetry function is deprecated: use SetRetryMechanism(...) instead")
+	log.Warn("SetCountDownRetry function is deprecated: use SetRetryMechanism(...) instead")
 	t.RetryMechanismFunc = retry.CountDownRetry(duration)
 	return t
 }
