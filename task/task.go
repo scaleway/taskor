@@ -21,6 +21,7 @@ type Definition struct {
 	Run  func(task *Task) error
 }
 
+// LoggerFields fields used in logs
 func (d Definition) LoggerFields() map[string]interface{} {
 	result := make(map[string]interface{})
 	result["Name"] = d.Name
@@ -66,6 +67,7 @@ type Task struct {
 	ParentTask *Task
 }
 
+// LoggerFields fields used in logs
 func (t Task) LoggerFields() map[string]interface{} {
 	result := make(map[string]interface{})
 	result["ID"] = t.ID
