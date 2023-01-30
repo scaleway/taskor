@@ -9,9 +9,9 @@ import (
 
 func Test_CountDownRetry_CountDownRetry(t *testing.T) {
 	cdr := CountDownRetry(time.Minute * 15)
-	assert.IsType(t, cdr.(RetryMechanismFunc), cdr)
+	assert.IsType(t, cdr.(RetryMechanism), cdr)
 
-	duration := cdr.(RetryMechanismFunc).DurationBeforeRetry(0)
+	duration := cdr.(RetryMechanism).DurationBeforeRetry(0)
 	assert.Equal(t, time.Minute*15, duration)
 }
 

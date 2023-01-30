@@ -10,7 +10,7 @@ import (
 
 func Test_ExponentialBackOff_ExponentialBackOffRetry(t *testing.T) {
 	testCases := []struct {
-		options         []ExponentialBackOffRetryOptionFn
+		options         []ExponentialBackOffRetryOption
 		expectedOptions *backoff.Backoff
 	}{
 		{
@@ -23,7 +23,7 @@ func Test_ExponentialBackOff_ExponentialBackOffRetry(t *testing.T) {
 			},
 		},
 		{
-			options: []ExponentialBackOffRetryOptionFn{
+			options: []ExponentialBackOffRetryOption{
 				SetFactor(3),
 				SetJitter(true),
 			},
@@ -35,7 +35,7 @@ func Test_ExponentialBackOff_ExponentialBackOffRetry(t *testing.T) {
 			},
 		},
 		{
-			options: []ExponentialBackOffRetryOptionFn{
+			options: []ExponentialBackOffRetryOption{
 				SetFactor(4),
 				SetJitter(false),
 				SetMin(time.Second * 10),
@@ -52,7 +52,7 @@ func Test_ExponentialBackOff_ExponentialBackOffRetry(t *testing.T) {
 
 	for _, testCase := range testCases {
 		cdr := ExponentialBackOffRetry(testCase.options...)
-		assert.IsType(t, cdr.(RetryMechanismFunc), cdr)
+		assert.IsType(t, cdr.(RetryMechanism), cdr)
 		assert.Equal(t, cdr.(*exponentialBackOffRetry).Backoff, testCase.expectedOptions)
 	}
 }
@@ -66,7 +66,7 @@ func Test_ExponentialBackOff_DurationBeforeRetry(t *testing.T) {
 			Max:    time.Minute * 1,
 		},
 	}
-	assert.IsType(t, ebr.(RetryMechanismFunc), ebr)
+	assert.IsType(t, ebr.(RetryMechanism), ebr)
 
 	testCases := []struct {
 		currentTry       int
@@ -82,7 +82,7 @@ func Test_ExponentialBackOff_DurationBeforeRetry(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		duration := ebr.(RetryMechanismFunc).DurationBeforeRetry(testCase.currentTry)
+		duration := ebr.(RetryMechanism).DurationBeforeRetry(testCase.currentTry)
 		assert.Equal(t, testCase.durationExpected, duration)
 	}
 }

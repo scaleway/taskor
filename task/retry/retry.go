@@ -2,8 +2,8 @@ package retry
 
 import "time"
 
-// RetryMechanismFunc interface to support
-// different delays before retrying a task
-type RetryMechanismFunc interface {
+// RetryMechanism interface to handling
+// different way to waiting before retry a task
+type RetryMechanism interface {
 	DurationBeforeRetry(currentTry int) time.Duration
 }

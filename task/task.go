@@ -12,7 +12,7 @@ import (
 const taskIDSize = 15
 
 var (
-	defaultRetryMechanism retry.RetryMechanismFunc = retry.CountDownRetry(20 * time.Second)
+	defaultRetryMechanism retry.RetryMechanism = retry.CountDownRetry(20 * time.Second)
 )
 
 // Definition struct used to define task
@@ -51,9 +51,9 @@ type Task struct {
 	CurrentTry int
 	// RetryOnError define is the task should retry if the task return err != nil
 	RetryOnError bool
-	// RetryMechanismFunc Interface to implement different method
+	// RetryMechanism Interface to implement different method
 	// to calculate duration to wait before retry
-	RetryMechanismFunc retry.RetryMechanismFunc
+	RetryMechanism retry.RetryMechanism
 	// ETA time after the task can be exec
 	ETA time.Time
 	// Error last error that was return by the task
@@ -102,7 +102,7 @@ func CreateTask(taskName string, param interface{}) (*Task, error) {
 		// Default is don't retry
 		MaxRetry: 0,
 		// Wait 20 second before retry
-		RetryMechanismFunc: defaultRetryMechanism,
+		RetryMechanism: defaultRetryMechanism,
 		// Task can be exec starting now
 		ETA: time.Now(),
 		ID:  utils.GenerateRandString(taskIDSize),
@@ -141,13 +141,13 @@ func (t *Task) SetRetryOnError(v bool) *Task {
 // SetCountDownRetry define time to wait before retry
 func (t *Task) SetCountDownRetry(duration time.Duration) *Task {
 	log.Warn("SetCountDownRetry function is deprecated: use SetRetryMechanism(...) instead")
-	t.RetryMechanismFunc = retry.CountDownRetry(duration)
+	t.RetryMechanism = retry.CountDownRetry(duration)
 	return t
 }
 
 // SetRetryMechanism define algorithm to calculate duration to wait before retry
-func (t *Task) SetRetryMechanism(mechanismFunc retry.RetryMechanismFunc) *Task {
-	t.RetryMechanismFunc = mechanismFunc
+func (t *Task) SetRetryMechanism(mechanismFunc retry.RetryMechanism) *Task {
+	t.RetryMechanism = mechanismFunc
 	return t
 }
 
