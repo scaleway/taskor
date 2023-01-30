@@ -25,8 +25,8 @@ func Debug(msg string) {
 }
 
 // DebugWithFields log with extraFields with level debug
-func DebugWithFields(msg string, i interface{}) {
-	stdLog.Debug(msg, GetFields(i))
+func DebugWithFields(msg string, fields map[string]interface{}) {
+	stdLog.Debug(msg, fields)
 }
 
 // Info log with level Info
@@ -35,8 +35,8 @@ func Info(msg string) {
 }
 
 // InfoWithFields log with extraFields with level Info
-func InfoWithFields(msg string, i interface{}) {
-	stdLog.Info(msg, GetFields(i))
+func InfoWithFields(msg string, fields map[string]interface{}) {
+	stdLog.Info(msg, fields)
 }
 
 // Warn log with level Warn
@@ -45,8 +45,8 @@ func Warn(msg string) {
 }
 
 // WarnWithFields log with extraFields with level Warn
-func WarnWithFields(msg string, i interface{}) {
-	stdLog.Warn(msg, GetFields(i))
+func WarnWithFields(msg string, fields map[string]interface{}) {
+	stdLog.Warn(msg, fields)
 }
 
 // Error log with level Error
@@ -55,6 +55,6 @@ func Error(msg string) {
 }
 
 // ErrorWithFields log with extraFields with level Error
-func ErrorWithFields(msg string, i interface{}) {
-	stdLog.Error(msg, GetFields(i))
+func ErrorWithFields(msg string, fields map[string]interface{}) {
+	stdLog.Error(msg, fields)
 }

@@ -182,7 +182,7 @@ loop:
 				if err == nil {
 					break
 				}
-				log.ErrorWithFields(fmt.Sprintf("send task error: %v", err), queuedTask)
+				log.ErrorWithFields(fmt.Sprintf("send task error: %v", err), queuedTask.LoggerFields())
 				// We don't want to overload the runner
 				time.Sleep(1 * time.Second)
 			}
@@ -242,7 +242,7 @@ loop:
 						childT.ParentTask = &currentTask
 						taskToSend <- childT
 					}
-					log.InfoWithFields("Task is done without error", currentTask)
+					log.InfoWithFields("Task is done without error", currentTask.LoggerFields())
 				}
 				// Inform runner task is finish and can be ack
 				taskDone <- currentTask
@@ -260,7 +260,7 @@ loop:
 func (t *Taskor) execTask(currentTask *task.Task) (err error) {
 	Definition := t.taskList[currentTask.TaskName]
 	if Definition == nil {
-		log.ErrorWithFields("Task was pooled but was not register", currentTask)
+		log.ErrorWithFields("Task was pooled but was not register", currentTask.LoggerFields())
 		return task.ErrNotRegisterd
 	}
 
@@ -305,11 +305,11 @@ func (t *Taskor) taskErrorHandler(taskToHandleError *task.Task, err error, taskT
 	// Retry if possible else call linked error task
 	if retry && t.retryTaskIfPossible(taskToHandleError, taskToSend) {
 		// the task has been retried
-		log.InfoWithFields(fmt.Sprintf("Retry: Task failed with error: %v", err), *taskToHandleError)
+		log.InfoWithFields(fmt.Sprintf("Retry: Task failed with error: %v", err), (*taskToHandleError).LoggerFields())
 		return
 	}
 
-	log.ErrorWithFields(fmt.Sprintf("Task failed with error: %v", err), *taskToHandleError)
+	log.ErrorWithFields(fmt.Sprintf("Task failed with error: %v", err), (*taskToHandleError).LoggerFields())
 	t.metric.TaskDoneWithError++
 
 	// Call linked error task
@@ -325,7 +325,7 @@ func (t *Taskor) taskErrorHandler(taskToHandleError *task.Task, err error, taskT
 func (t *Taskor) retryTaskIfPossible(taskToRetry *task.Task, taskToSend chan<- task.Task) bool {
 	// Negative value mean infinite retry
 	if taskToRetry.MaxRetry >= 0 && taskToRetry.CurrentTry > taskToRetry.MaxRetry {
-		log.ErrorWithFields("Task has reached MaxRetry", taskToRetry)
+		log.ErrorWithFields("Task has reached MaxRetry", taskToRetry.LoggerFields())
 		return false
 	}
 

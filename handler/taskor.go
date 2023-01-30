@@ -72,7 +72,7 @@ func (t *Taskor) Send(taskToSend *task.Task) error {
 	taskToSend.RunningID = utils.GenerateRandString(utils.TaskRunningIDSize)
 	// Update queued date
 	taskToSend.DateQueued = time.Now()
-	log.InfoWithFields("Send task", taskToSend)
+	log.InfoWithFields("Send task", taskToSend.LoggerFields())
 	t.metric.TaskSent++
 	return t.runner.Send(taskToSend)
 }
@@ -80,7 +80,7 @@ func (t *Taskor) Send(taskToSend *task.Task) error {
 // Handle register task that can be run
 func (t *Taskor) Handle(definition *task.Definition) error {
 	if _, ok := t.taskList[definition.Name]; ok {
-		log.ErrorWithFields("Task name was already register", definition)
+		log.ErrorWithFields("Task name was already register", definition.LoggerFields())
 		return errors.New("Task name was already register")
 	}
 	t.taskList[definition.Name] = definition

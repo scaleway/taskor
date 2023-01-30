@@ -90,7 +90,7 @@ func (t *RunnerAmqp) RunWorkerTaskAck(taskDone <-chan task.Task) {
 		}
 
 		if err := delivery.Ack(false); err != nil {
-			log.InfoWithFields("Error Acking message for task", taskToAck)
+			log.InfoWithFields("Error Acking message for task", taskToAck.LoggerFields())
 			continue
 		}
 	}

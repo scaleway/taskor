@@ -16,18 +16,24 @@ var (
 
 // Definition struct used to define task
 type Definition struct {
-	Name string `log:"true"`
+	Name string
 	Run  func(task *Task) error
+}
+
+func (d Definition) LoggerFields() map[string]interface{} {
+	result := make(map[string]interface{})
+	result["Name"] = d.Name
+	return result
 }
 
 // Task struct used to be send in queue
 type Task struct {
 	// TaskID string (doesn't change on retry)
-	ID string `log:"true"`
+	ID string
 	// RunningID Id of current running (change on retry)
-	RunningID string `log:"true"`
+	RunningID string
 	// TaskName name of task to execute
-	TaskName string `log:"true"`
+	TaskName string
 	// Parameter serialized task parameter
 	Parameter []byte
 	// Serialier Serializer to use to unserialize parameter
@@ -39,9 +45,9 @@ type Task struct {
 	// DateDone date the task was done (end of execution)
 	DateDone time.Time
 	// MaxRetry max retry allowed, negative value mean infinit
-	MaxRetry int `log:"true"`
+	MaxRetry int
 	// CurrentTry (starts at 1)
-	CurrentTry int `log:"true"`
+	CurrentTry int
 	// RetryOnError define is the task should retry if the task return err != nil
 	RetryOnError bool
 	// RetryMechanismFunc Interface to implement different method
@@ -57,6 +63,26 @@ type Task struct {
 	ChildTasks []*Task
 	// ParentTask access to the parent task
 	ParentTask *Task
+}
+
+func (t Task) LoggerFields() map[string]interface{} {
+	result := make(map[string]interface{})
+	result["ID"] = t.ID
+	result["RunningID"] = t.RunningID
+	result["TaskName"] = t.TaskName
+	result["MaxRetry"] = t.MaxRetry
+	result["CurrentTry"] = t.CurrentTry
+
+	if t.ParentTask != nil {
+		result["ParentTask_ID"] = t.ParentTask.ID
+		result["ParentTask_RunningID"] = t.ParentTask.RunningID
+		result["ParentTask_Name"] = t.ParentTask.TaskName
+	}
+
+	if t.LinkError != nil {
+		result["ErrorTask_Name"] = t.LinkError.TaskName
+	}
+	return result
 }
 
 // CreateTask create a new task without running it
