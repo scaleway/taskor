@@ -64,11 +64,11 @@ func NewExponentialBackOffRetryFromDefinition(definition RetryMechanismDefinitio
 	}
 
 	var factor float64
-	switch factorValue.(type) {
+	switch factorValue := factorValue.(type) {
 	case int:
-		factor = float64(factorValue.(int))
+		factor = float64(factorValue)
 	case float64:
-		factor = factorValue.(float64)
+		factor = factorValue
 	default:
 		return nil, ErrExponentialBackOffRetryInvalidParams
 	}
