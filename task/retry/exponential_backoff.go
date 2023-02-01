@@ -1,6 +1,8 @@
 package retry
 
 import (
+	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/jpillora/backoff"
@@ -13,10 +15,83 @@ var (
 		Min:    100 * time.Millisecond,
 		Max:    10 * time.Second,
 	}
+
+	// ErrExponentialBackOffRetryInvalidParams Raise invalid params when a params is not found
+	ErrExponentialBackOffRetryInvalidParams = fmt.Errorf("invalid params")
+	// ErrExponentialBackOffRetryInvalidDuration Raise invalid duration when duration from params can't be parsed as Duration
+	ErrExponentialBackOffRetryInvalidDuration = fmt.Errorf("invalid duration")
 )
 
 type exponentialBackOffRetry struct {
 	*backoff.Backoff
+}
+
+// Type return MechanismType
+func (e *exponentialBackOffRetry) Type() RetryMechanismType {
+	return ExponentialBackOffRetryMechanismType
+}
+
+// NewExponentialBackOffRetryFromDefinition initialize ExponentialBackOffRetry from RetryMechanismDefinition
+func NewExponentialBackOffRetryFromDefinition(definition RetryMechanismDefinition) (RetryMechanism, error) {
+	factorValue, ok := definition.Params["factor"]
+	if !ok {
+		return nil, ErrExponentialBackOffRetryInvalidParams
+	}
+
+	jitter, ok := definition.Params["jitter"]
+	if !ok {
+		return nil, ErrExponentialBackOffRetryInvalidParams
+	}
+
+	minDurationStr, ok := definition.Params["min_duration"]
+	if !ok {
+		return nil, ErrExponentialBackOffRetryInvalidParams
+	}
+
+	minDuration, err := time.ParseDuration(minDurationStr.(string))
+	if err != nil {
+		return nil, ErrExponentialBackOffRetryInvalidDuration
+	}
+
+	maxDurationStr, ok := definition.Params["max_duration"]
+	if !ok {
+		return nil, ErrExponentialBackOffRetryInvalidParams
+	}
+
+	maxDuration, err := time.ParseDuration(maxDurationStr.(string))
+	if err != nil {
+		return nil, ErrExponentialBackOffRetryInvalidDuration
+	}
+
+	var factor float64
+	switch factorValue.(type) {
+	case int:
+		factor = float64(factorValue.(int))
+	case float64:
+		factor = factorValue.(float64)
+	default:
+		return nil, ErrExponentialBackOffRetryInvalidParams
+	}
+
+	return ExponentialBackOffRetry(
+		SetFactor(factor),
+		SetJitter(jitter.(bool)),
+		SetMin(minDuration),
+		SetMax(maxDuration),
+	), nil
+}
+
+// MarshalJSON implement JSON Marshalling to encode this complex object
+func (e *exponentialBackOffRetry) MarshalJSON() ([]byte, error) {
+	return json.Marshal(RetryMechanismDefinition{
+		Type: ExponentialBackOffRetryMechanismType,
+		Params: map[string]interface{}{
+			"factor":       e.Factor,
+			"jitter":       e.Jitter,
+			"min_duration": e.Min.String(),
+			"max_duration": e.Max.String(),
+		},
+	})
 }
 
 // ExponentialBackOffRetryOption Implement Option pattern

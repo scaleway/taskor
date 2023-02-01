@@ -1,6 +1,8 @@
 package task
 
 import (
+	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/scaleway/taskor/log"
@@ -65,6 +67,74 @@ type Task struct {
 	ChildTasks []*Task
 	// ParentTask access to the parent task
 	ParentTask *Task
+}
+
+// UnmarshalJSON implement JSON unmarshaller
+// This permit to decoding complex object
+func (t *Task) UnmarshalJSON(b []byte) error {
+	var unmarshallTmpObject = struct {
+		// TaskID string (doesn't change on retry)
+		ID string
+		// RunningID Id of current running (change on retry)
+		RunningID string
+		// TaskName name of task to execute
+		TaskName string
+		// Parameter serialized task parameter
+		Parameter []byte
+		// Serialier Serializer to use to unserialize parameter
+		Serializer serializer.Type
+		// DateQueued date the task was queued
+		DateQueued time.Time
+		// DateExecuted date the task was executed
+		DateExecuted time.Time
+		// DateDone date the task was done (end of execution)
+		DateDone time.Time
+		// MaxRetry max retry allowed, negative value mean infinit
+		MaxRetry int
+		// CurrentTry (starts at 1)
+		CurrentTry int
+		// RetryOnError define is the task should retry if the task return err != nil
+		RetryOnError bool
+		// ETA time after the task can be exec
+		ETA time.Time
+		// Error last error that was return by the task
+		Error string
+		// LinkError task
+		LinkError *Task
+		// ChildTasks Task
+		ChildTasks []*Task
+		// ParentTask access to the parent task
+		ParentTask     *Task
+		RetryMechanism retry.RetryMechanismDefinition
+	}{}
+	err := json.Unmarshal(b, &unmarshallTmpObject)
+	if err != nil {
+		return err
+	}
+
+	retryMechanism, err := retry.NewRetryMechanismFromDefinition(unmarshallTmpObject.RetryMechanism)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal retry mechanism: %v", err)
+	}
+
+	t.ID = unmarshallTmpObject.ID
+	t.RunningID = unmarshallTmpObject.RunningID
+	t.TaskName = unmarshallTmpObject.TaskName
+	t.Parameter = unmarshallTmpObject.Parameter
+	t.Serializer = unmarshallTmpObject.Serializer
+	t.DateQueued = unmarshallTmpObject.DateQueued
+	t.DateExecuted = unmarshallTmpObject.DateExecuted
+	t.DateDone = unmarshallTmpObject.DateDone
+	t.MaxRetry = unmarshallTmpObject.MaxRetry
+	t.CurrentTry = unmarshallTmpObject.CurrentTry
+	t.RetryOnError = unmarshallTmpObject.RetryOnError
+	t.ETA = unmarshallTmpObject.ETA
+	t.Error = unmarshallTmpObject.Error
+	t.LinkError = unmarshallTmpObject.LinkError
+	t.ChildTasks = unmarshallTmpObject.ChildTasks
+	t.ParentTask = unmarshallTmpObject.ParentTask
+	t.RetryMechanism = retryMechanism
+	return nil
 }
 
 // LoggerFields fields used in logs

@@ -57,6 +57,45 @@ func Test_ExponentialBackOff_ExponentialBackOffRetry(t *testing.T) {
 	}
 }
 
+func Test_ExponentialBackOff_Type(t *testing.T) {
+	rm := ExponentialBackOffRetry()
+	assert.Equal(t, ExponentialBackOffRetryMechanismType, rm.Type())
+}
+
+func Test_ExponentialBackOff_NewExponentialBackOffRetryFromDefinition(t *testing.T) {
+	definition := RetryMechanismDefinition{
+		Type: ExponentialBackOffRetryMechanismType,
+		Params: map[string]interface{}{
+			"factor":       1.1,
+			"jitter":       false,
+			"min_duration": "10m",
+			"max_duration": "1h",
+		},
+	}
+
+	rm, err := NewExponentialBackOffRetryFromDefinition(definition)
+	assert.Nil(t, err)
+	assert.Equal(t, rm.(*exponentialBackOffRetry).Factor, 1.1)
+	assert.Equal(t, rm.(*exponentialBackOffRetry).Jitter, false)
+	assert.Equal(t, rm.(*exponentialBackOffRetry).Min, 10*time.Minute)
+	assert.Equal(t, rm.(*exponentialBackOffRetry).Max, 1*time.Hour)
+}
+
+func Test_ExponentialBackOff_MarshalJSON(t *testing.T) {
+	rm := ExponentialBackOffRetry(
+		SetFactor(3),
+		SetJitter(true),
+		SetMin(time.Millisecond*250),
+		SetMax(time.Hour*2),
+	)
+	data, err := rm.MarshalJSON()
+
+	expected := `{"type":"ExponentialBackOffRetry","params":{"factor":3,"jitter":true,"max_duration":"2h0m0s","min_duration":"250ms"}}`
+
+	assert.Nil(t, err)
+	assert.Equal(t, string(data), expected)
+}
+
 func Test_ExponentialBackOff_DurationBeforeRetry(t *testing.T) {
 	var ebr interface{} = &exponentialBackOffRetry{
 		Backoff: &backoff.Backoff{
