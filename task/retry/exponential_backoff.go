@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	defaultExponentialBackOffSettings = &backoff.Backoff{
+	defaultExponentialBackOffSettings = backoff.Backoff{
 		Factor: 2,
 		Jitter: false,
 		Min:    100 * time.Millisecond,
@@ -23,7 +23,7 @@ var (
 )
 
 type exponentialBackOffRetry struct {
-	*backoff.Backoff
+	backoff.Backoff
 }
 
 // Type return MechanismType

@@ -11,11 +11,11 @@ import (
 func Test_ExponentialBackOff_ExponentialBackOffRetry(t *testing.T) {
 	testCases := []struct {
 		options         []ExponentialBackOffRetryOption
-		expectedOptions *backoff.Backoff
+		expectedOptions backoff.Backoff
 	}{
 		{
 			options: nil,
-			expectedOptions: &backoff.Backoff{
+			expectedOptions: backoff.Backoff{
 				Factor: 2,
 				Jitter: false,
 				Min:    100 * time.Millisecond,
@@ -27,7 +27,7 @@ func Test_ExponentialBackOff_ExponentialBackOffRetry(t *testing.T) {
 				SetFactor(3),
 				SetJitter(true),
 			},
-			expectedOptions: &backoff.Backoff{
+			expectedOptions: backoff.Backoff{
 				Factor: 3,
 				Jitter: true,
 				Min:    time.Millisecond * 100,
@@ -41,7 +41,7 @@ func Test_ExponentialBackOff_ExponentialBackOffRetry(t *testing.T) {
 				SetMin(time.Second * 10),
 				SetMax(time.Minute * 10),
 			},
-			expectedOptions: &backoff.Backoff{
+			expectedOptions: backoff.Backoff{
 				Factor: 4,
 				Jitter: false,
 				Min:    time.Second * 10,
@@ -98,7 +98,7 @@ func Test_ExponentialBackOff_MarshalJSON(t *testing.T) {
 
 func Test_ExponentialBackOff_DurationBeforeRetry(t *testing.T) {
 	var ebr interface{} = &exponentialBackOffRetry{
-		Backoff: &backoff.Backoff{
+		Backoff: backoff.Backoff{
 			Factor: 2,
 			Jitter: false,
 			Min:    time.Second * 5,
