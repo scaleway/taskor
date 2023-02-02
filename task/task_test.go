@@ -111,7 +111,7 @@ func Test_Task_Serialize(t *testing.T) {
 	task, _ := CreateTask("t1", nil)
 
 	t2, _ := CreateTask("t2", nil)
-	t2.RetryMechanism = retry.ExponentialBackOffRetry(retry.SetJitter(true), retry.SetMin(time.Second*5), retry.SetMax(time.Minute*1), retry.SetFactor(1.5))
+	t2.RetryMechanism = retry.ExponentialBackOffRetry(retry.SetJitter(false), retry.SetMin(time.Second*5), retry.SetMax(time.Minute*1), retry.SetFactor(1.5))
 	task.AddChild(t2)
 
 	t3, _ := CreateTask("t3", nil)
