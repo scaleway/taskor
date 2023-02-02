@@ -333,7 +333,7 @@ func (t *Taskor) retryTaskIfPossible(taskToRetry *task.Task, taskToSend chan<- t
 	newTask := *taskToRetry
 	// Adjust date when we need to retry
 	if newTask.RetryMechanism != nil {
-		newTask.ETA = time.Now().Add(newTask.RetryMechanism.DurationBeforeRetry(taskToRetry.CurrentTry))
+		newTask.ETA = taskToRetry.DateDone.Add(newTask.RetryMechanism.DurationBeforeRetry(taskToRetry.CurrentTry))
 	}
 	taskToSend <- newTask
 	return true
