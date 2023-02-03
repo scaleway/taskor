@@ -30,6 +30,13 @@ func (d Definition) LoggerFields() map[string]interface{} {
 	return result
 }
 
+// SetDefaultRetryMechanism override default retry mechanism used at Task initialization
+func SetDefaultRetryMechanism(retryMechanism retry.RetryMechanism) {
+	if retryMechanism != nil {
+		defaultRetryMechanism = retryMechanism
+	}
+}
+
 // Task struct used to be send in queue
 type Task struct {
 	// TaskID string (doesn't change on retry)
