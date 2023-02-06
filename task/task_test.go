@@ -158,6 +158,16 @@ func Test_UnserializeTask(t *testing.T) {
 	assert.Equal(t, task.RetryMechanism.DurationBeforeRetry(5), time.Hour*2)
 }
 
+func TestTask_SetDefaultRetry(t *testing.T) {
+	task, _ := CreateTask("test-retry", nil)
+
+	SetDefaultRetry(10)
+	task2, _ := CreateTask("test-retry2", nil)
+
+	assert.Equal(t, 0, task.MaxRetry)
+	assert.Equal(t, 10, task2.MaxRetry)
+}
+
 func TestTask_AddChild(t *testing.T) {
 	t.Run("AddChild nil task", func(t *testing.T) {
 		task, _ := CreateTask("test", nil)
