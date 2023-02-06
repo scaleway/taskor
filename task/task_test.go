@@ -217,3 +217,11 @@ func TestTask_LastRetry(t *testing.T) {
 		})
 	}
 }
+
+func Test_SetDefaultRetryMechanism(t *testing.T) {
+	rm := retry.ExponentialBackOffRetry(retry.SetJitter(false), retry.SetMin(time.Minute*5), retry.SetMax(time.Hour*1), retry.SetFactor(3))
+	SetDefaultRetryMechanism(rm)
+
+	task, _ := CreateTask("test", nil)
+	assert.Equal(t, rm, task.RetryMechanism)
+}
