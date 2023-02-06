@@ -15,6 +15,7 @@ const taskIDSize = 15
 
 var (
 	defaultRetryMechanism retry.RetryMechanism = retry.CountDownRetry(20 * time.Second)
+	defaultMaxRetry                            = 0
 )
 
 // Definition struct used to define task
@@ -28,6 +29,18 @@ func (d Definition) LoggerFields() map[string]interface{} {
 	result := make(map[string]interface{})
 	result["Name"] = d.Name
 	return result
+}
+
+// SetDefaultRetryMechanism override default retry mechanism used at Task initialization
+func SetDefaultRetryMechanism(retryMechanism retry.RetryMechanism) {
+	if retryMechanism != nil {
+		defaultRetryMechanism = retryMechanism
+	}
+}
+
+// SetDefaultRetry override default retry used at Task initialization
+func SetDefaultRetry(maxRetry int) {
+	defaultMaxRetry = maxRetry
 }
 
 // Task struct used to be send in queue
@@ -172,7 +185,7 @@ func CreateTask(taskName string, param interface{}) (*Task, error) {
 		Serializer: serializer.GlobalSerializer,
 		CurrentTry: 0,
 		// Default is don't retry
-		MaxRetry: 0,
+		MaxRetry: defaultMaxRetry,
 		// Wait 20 second before retry
 		RetryMechanism: defaultRetryMechanism,
 		// Task can be exec starting now
