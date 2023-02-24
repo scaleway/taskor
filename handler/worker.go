@@ -309,7 +309,7 @@ func (t *Taskor) taskErrorHandler(taskToHandleError *task.Task, err error, taskT
 		return
 	}
 
-	log.ErrorWithFields(fmt.Sprintf("Task failed with error: %v", err), (*taskToHandleError).LoggerFields())
+	log.InfoWithFields(fmt.Sprintf("Task failed with error: %v", err), (*taskToHandleError).LoggerFields())
 	t.metric.TaskDoneWithError++
 
 	// Call linked error task
@@ -325,7 +325,7 @@ func (t *Taskor) taskErrorHandler(taskToHandleError *task.Task, err error, taskT
 func (t *Taskor) retryTaskIfPossible(taskToRetry *task.Task, taskToSend chan<- task.Task) bool {
 	// Negative value mean infinite retry
 	if taskToRetry.MaxRetry >= 0 && taskToRetry.CurrentTry > taskToRetry.MaxRetry {
-		log.ErrorWithFields("Task has reached MaxRetry", taskToRetry.LoggerFields())
+		log.InfoWithFields("Task has reached MaxRetry", taskToRetry.LoggerFields())
 		return false
 	}
 
