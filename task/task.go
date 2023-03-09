@@ -173,8 +173,12 @@ func (t Task) LoggerFields() map[string]interface{} {
 
 // CreateTask create a new task without running it
 func CreateTask(taskName string, param interface{}) (*Task, error) {
+	return CreateTaskWithSerializer(taskName, param, serializer.GlobalSerializer)
+}
+
+func CreateTaskWithSerializer(taskName string, param interface{}, serializerType serializer.Type) (*Task, error) {
 	// Serialize parameter
-	serializedParameter, err := serializer.GetGlobalSerializer().Serialize(param)
+	serializedParameter, err := serializer.GetSerializer(serializerType).Serialize(param)
 	if err != nil {
 		return nil, err
 	}
@@ -182,7 +186,7 @@ func CreateTask(taskName string, param interface{}) (*Task, error) {
 	task := &Task{
 		TaskName:   taskName,
 		Parameter:  serializedParameter,
-		Serializer: serializer.GlobalSerializer,
+		Serializer: serializerType,
 		CurrentTry: 0,
 		// Default is don't retry
 		MaxRetry: defaultMaxRetry,

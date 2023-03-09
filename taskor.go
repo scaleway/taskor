@@ -26,10 +26,12 @@ type TaskManager interface {
 
 // New create a new Taskor instance
 func New(runner runner.Runner) (TaskManager, error) {
+	return NewWithSerializer(runner, serializer.TypeJSON)
+}
+
+func NewWithSerializer(runner runner.Runner, serializerType serializer.Type) (TaskManager, error) {
 	log.Debug("Starting")
-	serializer.GlobalSerializer = serializer.TypeJSON
-	taskor, err := handler.New(runner)
-	return taskor, err
+	return handler.NewWithSerializer(runner, serializerType)
 }
 
 // SetLogger - change current logger

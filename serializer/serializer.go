@@ -6,6 +6,7 @@ type Type int
 // Serializer constant
 const (
 	TypeJSON Type = 1 + iota
+	TypeGob
 )
 
 // GlobalSerializer var use to choose Serializer, should be init
@@ -19,14 +20,7 @@ type Serializer interface {
 
 // GetGlobalSerializer Return serilizer from type
 func GetGlobalSerializer() Serializer {
-	var serial Serializer
-	switch {
-	case GlobalSerializer == TypeJSON:
-		serial = &serializerJSON{}
-	default:
-		serial = &serializerJSON{}
-	}
-	return serial
+	return GetSerializer(GlobalSerializer)
 }
 
 // GetSerializer Return serilizer from type
@@ -35,8 +29,21 @@ func GetSerializer(Type Type) Serializer {
 	switch {
 	case Type == TypeJSON:
 		serial = &serializerJSON{}
+	case Type == TypeGob:
+		serial = &serializerGob{}
 	default:
 		serial = &serializerJSON{}
 	}
 	return serial
+}
+
+func GetContentType(Type Type) string {
+	switch {
+	case Type == TypeJSON:
+		return "text/plain"
+	case Type == TypeGob:
+		return "application/octet-stream"
+	default:
+		return "text/plain"
+	}
 }

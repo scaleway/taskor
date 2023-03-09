@@ -28,7 +28,7 @@ func (t *RunnerAmqp) Send(task *task.Task) error {
 		false,       // mandatory
 		false,       // immediate
 		amqp.Publishing{
-			ContentType: "text/plain",
+			ContentType: serializer.GetContentType(t.serializer),
 			Body:        body,
 		})
 	if err != nil {

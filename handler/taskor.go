@@ -51,8 +51,12 @@ type Taskor struct {
 
 // New create a new Taskor instance
 func New(runner runner.Runner) (*Taskor, error) {
+	return NewWithSerializer(runner, serializer.TypeJSON)
+}
+
+func NewWithSerializer(runner runner.Runner, serializerType serializer.Type) (*Taskor, error) {
 	// Init serializer
-	serializer.GlobalSerializer = serializer.TypeJSON
+	serializer.GlobalSerializer = serializerType
 
 	var t Taskor
 	// Init task runner
