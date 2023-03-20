@@ -154,13 +154,14 @@ func (t *RunnerAmqp) handleAMQPFailure() {
 	select {
 	// Wait for a Close notification
 	case rabbitErr := <-t.rabbitCloseError:
+		log.Warn(fmt.Sprintf("received disconnection event: %v", rabbitErr))
 		if rabbitErr != nil {
-			log.Warn("Received disconnection event")
 			t.amqpRetryConnect()
 		}
 
 	// Handle block notification, reconnect ONLY on unblocking
 	case rabbitBlock := <-t.rabbitBlockError:
+		log.Warn(fmt.Sprintf("received blocking event: active(%t) reason(%s)", rabbitBlock.Active, rabbitBlock.Reason))
 		// We got blocked and received unblocking
 		if !rabbitBlock.Active {
 			t.amqpRetryConnect()

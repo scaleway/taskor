@@ -1,6 +1,7 @@
 package amqp
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/scaleway/taskor/log"
@@ -89,8 +90,9 @@ func (t *RunnerAmqp) RunWorkerTaskAck(taskDone <-chan task.Task) {
 			continue
 		}
 
-		if err := delivery.Ack(false); err != nil {
-			log.InfoWithFields("Error Acking message for task", taskToAck.LoggerFields())
+		if err = delivery.Ack(false); err != nil {
+			msg := fmt.Sprintf("Error Acking message for task: %v", err)
+			log.WarnWithFields(msg, taskToAck.LoggerFields())
 			continue
 		}
 	}
