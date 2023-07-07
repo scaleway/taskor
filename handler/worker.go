@@ -268,6 +268,7 @@ func (t *Taskor) execTask(currentTask *task.Task) (err error) {
 		// Handle panic in task execution, in case of panic the task is considered as in error
 		if r := recover(); r != nil {
 			currentTask.Error = fmt.Sprint(r)
+			currentTask.TaskError = task.NewError(fmt.Sprint(r))
 			err = errors.New(fmt.Sprint(r))
 			currentTask.DateDone = time.Now()
 		}
@@ -281,6 +282,12 @@ func (t *Taskor) execTask(currentTask *task.Task) (err error) {
 	if err != nil {
 		// Add error msg
 		currentTask.Error = err.Error()
+		switch err := err.(type) {
+		case *task.Error:
+			currentTask.TaskError = err
+		default:
+			currentTask.TaskError = task.NewError(err.Error())
+		}
 	}
 
 	// After task execution

@@ -73,7 +73,10 @@ type Task struct {
 	// ETA time after the task can be exec
 	ETA time.Time
 	// Error last error that was return by the task
+	// Deprecated: use TaskError instead
 	Error string
+	// TaskError error returned by task
+	TaskError *Error
 	// LinkError task
 	LinkError *Task
 	// ChildTasks Task
@@ -112,6 +115,8 @@ func (t *Task) UnmarshalJSON(b []byte) error {
 		ETA time.Time
 		// Error last error that was return by the task
 		Error string
+		// TaskError error returned by task
+		TaskError *Error
 		// LinkError task
 		LinkError *Task
 		// ChildTasks Task
@@ -143,6 +148,7 @@ func (t *Task) UnmarshalJSON(b []byte) error {
 	t.RetryOnError = unmarshallTmpObject.RetryOnError
 	t.ETA = unmarshallTmpObject.ETA
 	t.Error = unmarshallTmpObject.Error
+	t.TaskError = unmarshallTmpObject.TaskError
 	t.LinkError = unmarshallTmpObject.LinkError
 	t.ChildTasks = unmarshallTmpObject.ChildTasks
 	t.ParentTask = unmarshallTmpObject.ParentTask
