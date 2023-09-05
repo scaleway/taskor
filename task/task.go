@@ -9,6 +9,7 @@ import (
 	"github.com/scaleway/taskor/serializer"
 	"github.com/scaleway/taskor/task/retry"
 	"github.com/scaleway/taskor/utils"
+	"golang.org/x/exp/maps"
 )
 
 const taskIDSize = 15
@@ -80,6 +81,8 @@ type Task struct {
 	ChildTasks []*Task
 	// ParentTask access to the parent task
 	ParentTask *Task
+	// Metadata context of the tasks
+	Metadata map[string]interface{}
 }
 
 // UnmarshalJSON implement JSON unmarshaller
@@ -119,6 +122,8 @@ func (t *Task) UnmarshalJSON(b []byte) error {
 		// ParentTask access to the parent task
 		ParentTask     *Task
 		RetryMechanism retry.RetryMechanismDefinition
+		// Metadata context of the tasks
+		Metadata map[string]interface{}
 	}{}
 	err := json.Unmarshal(b, &unmarshallTmpObject)
 	if err != nil {
@@ -147,7 +152,13 @@ func (t *Task) UnmarshalJSON(b []byte) error {
 	t.ChildTasks = unmarshallTmpObject.ChildTasks
 	t.ParentTask = unmarshallTmpObject.ParentTask
 	t.RetryMechanism = retryMechanism
+	t.Metadata = unmarshallTmpObject.Metadata
 	return nil
+}
+
+// AppendMetadata appends new entries overriding previous ones if needed.
+func (t Task) AppendMetadata(newMetadata map[string]interface{}) {
+	maps.Copy(t.Metadata, newMetadata)
 }
 
 // LoggerFields fields used in logs
@@ -168,6 +179,9 @@ func (t Task) LoggerFields() map[string]interface{} {
 	if t.LinkError != nil {
 		result["ErrorTask_Name"] = t.LinkError.TaskName
 	}
+
+	maps.Copy(result, t.Metadata)
+
 	return result
 }
 
@@ -193,8 +207,9 @@ func CreateTaskWithSerializer(taskName string, param interface{}, serializerType
 		// Wait 20 second before retry
 		RetryMechanism: defaultRetryMechanism,
 		// Task can be exec starting now
-		ETA: time.Now(),
-		ID:  utils.GenerateRandString(taskIDSize),
+		ETA:      time.Now(),
+		ID:       utils.GenerateRandString(taskIDSize),
+		Metadata: make(map[string]interface{}),
 	}
 	return task, nil
 }

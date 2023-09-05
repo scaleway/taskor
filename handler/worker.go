@@ -309,7 +309,7 @@ func (t *Taskor) taskErrorHandler(taskToHandleError *task.Task, err error, taskT
 		return
 	}
 
-	log.InfoWithFields(fmt.Sprintf("Task failed with error: %v", err), (*taskToHandleError).LoggerFields())
+	log.ErrorWithFields(fmt.Sprintf("Task failed with error: %v", err), (*taskToHandleError).LoggerFields())
 	t.metric.TaskDoneWithError++
 
 	// Call linked error task

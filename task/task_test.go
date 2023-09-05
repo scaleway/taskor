@@ -46,6 +46,52 @@ func Test_Task_LoggerFields(t *testing.T) {
 			t.Errorf("Task.LoggerFields() got %v, want %v", got, expected)
 		}
 	})
+
+	t.Run("*Task with metadata", func(t *testing.T) {
+		task, _ := CreateTask("test", nil)
+
+		// Append extra fields
+		task.Metadata["Field1"] = "value 1"
+		task.Metadata["Field2"] = "value 2"
+
+		got := task.LoggerFields()
+		// Check fields are returned
+		if value, ok := got["Field1"]; !ok {
+			t.Error("Task.LoggerFields() failed to include metadata field 'Field1'")
+		} else if value != "value 1" {
+			t.Errorf("Task.LoggerFields() contains invalid fiel 'Field1'. Got %v, want %v", value, "value 1")
+		}
+		if value, ok := got["Field2"]; !ok {
+			t.Error("Task.LoggerFields() failed to include metadata field 'Field2'")
+		} else if value != "value 2" {
+			t.Errorf("Task.LoggerFields() contains invalid fiel 'Field1'. Got %v, want %v", value, "value 2")
+		}
+	})
+}
+
+func Test_Task_AppendMetadata(t *testing.T) {
+	task, _ := CreateTask("test", nil)
+
+	// Append extra fields
+	task.Metadata["Field1"] = "value 1"
+	task.Metadata["Field2"] = "value 2"
+
+	// Append more extra fields
+	task.AppendMetadata(map[string]interface{}{
+		"Field2": "Value 2",
+		"Field3": "Value 3",
+	})
+
+	expected := map[string]interface{}{
+		"Field1": "value 1",
+		"Field2": "Value 2",
+		"Field3": "Value 3",
+	}
+	got := task.Metadata
+	if !reflect.DeepEqual(got, expected) {
+		t.Errorf("Task.Metadata got %v, want %v", got, expected)
+	}
+
 }
 
 func Test_Definition_LoggerFields(t *testing.T) {
@@ -108,25 +154,27 @@ func Test_CreateTask(t *testing.T) {
 }
 
 func Test_Task_Serialize(t *testing.T) {
-	task, _ := CreateTask("t1", nil)
+	t1, _ := CreateTask("t1", nil)
+	t1.Metadata["ServerID"] = "183a5314-f3a0-44e2-a783-e061690de9d0"
 
 	t2, _ := CreateTask("t2", nil)
 	t2.RetryMechanism = retry.ExponentialBackOffRetry(retry.SetJitter(false), retry.SetMin(time.Second*5), retry.SetMax(time.Minute*1), retry.SetFactor(1.5))
-	task.AddChild(t2)
+	t1.AddChild(t2)
 
 	t3, _ := CreateTask("t3", nil)
 	t3.RetryMechanism = retry.ExponentialBackOffRetry(retry.SetJitter(false), retry.SetMin(time.Minute*5), retry.SetMax(time.Hour*1), retry.SetFactor(3))
-	task.AddChild(t3)
+	t1.AddChild(t3)
 
-	data, err := serializer.GetSerializer(task.Serializer).Serialize(task)
+	data, err := serializer.GetSerializer(t1.Serializer).Serialize(t1)
 	assert.Nil(t, err)
 	assert.NotNil(t, data)
 	log.Print(string(data))
 
 	newTask := Task{}
-	err = serializer.GetSerializer(task.Serializer).Unserialize(&newTask, data)
+	err = serializer.GetSerializer(t1.Serializer).Unserialize(&newTask, data)
 	assert.Nil(t, err)
-	assert.Equal(t, newTask.ID, task.ID)
+	assert.Equal(t, newTask.ID, t1.ID)
+	assert.Equal(t, "183a5314-f3a0-44e2-a783-e061690de9d0", newTask.Metadata["ServerID"])
 	assert.Len(t, newTask.ChildTasks, 2)
 	assert.Equal(t, newTask.ChildTasks[0].ID, t2.ID)
 	assert.Equal(t, newTask.ChildTasks[0].TaskName, t2.TaskName)
