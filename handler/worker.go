@@ -297,7 +297,7 @@ func (t *Taskor) taskErrorHandler(taskToHandleError *task.Task, err error, taskT
 
 	retry := false
 	switch {
-	case err == task.ErrTaskRetry:
+	case errors.Is(err, task.ErrTaskRetry):
 		retry = true
 	case taskToHandleError.RetryOnError:
 		retry = true
