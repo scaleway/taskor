@@ -22,8 +22,8 @@ type TaskManager interface {
 	StopWorker()
 	// GetMetrics return current metric
 	GetMetrics() handler.Metric
-	// IsRunnerHealthy checks that the runner connection and channel are set
-	IsRunnerHealthy() error
+	// IsRunnerReady checks that the runner connection and channel are set
+	IsRunnerReady() error
 }
 
 // New create a new Taskor instance

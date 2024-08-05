@@ -95,8 +95,8 @@ func (t *RunnerAmqp) Stop() error {
 	return nil
 }
 
-// IsHealthy checks that the runner connection and channel are set
-func (t *RunnerAmqp) IsHealthy() error {
+// IsReady checks that the runner connection and channel are set
+func (t *RunnerAmqp) IsReady() error {
 	if t.conn == nil {
 		return fmt.Errorf("connection is not established")
 	}

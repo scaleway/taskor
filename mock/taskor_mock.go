@@ -77,18 +77,18 @@ func (mr *MockTaskManagerMockRecorder) Handle(Definition interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Handle", reflect.TypeOf((*MockTaskManager)(nil).Handle), Definition)
 }
 
-// IsRunnerHealthy mocks base method.
-func (m *MockTaskManager) IsRunnerHealthy() error {
+// IsRunnerReady mocks base method.
+func (m *MockTaskManager) IsRunnerReady() error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "IsRunnerHealthy")
+	ret := m.ctrl.Call(m, "IsRunnerReady")
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// IsRunnerHealthy indicates an expected call of IsRunnerHealthy.
-func (mr *MockTaskManagerMockRecorder) IsRunnerHealthy() *gomock.Call {
+// IsRunnerReady indicates an expected call of IsRunnerReady.
+func (mr *MockTaskManagerMockRecorder) IsRunnerReady() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsRunnerHealthy", reflect.TypeOf((*MockTaskManager)(nil).IsRunnerHealthy))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsRunnerReady", reflect.TypeOf((*MockTaskManager)(nil).IsRunnerReady))
 }
 
 // RunWorker mocks base method.

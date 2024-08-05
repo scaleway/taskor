@@ -84,9 +84,9 @@ func (t *Taskor) RunWorker() error {
 	return nil
 }
 
-// IsRunnerHealthy checks that the runner connection and channel are set
-func (t *Taskor) IsRunnerHealthy() error {
-	return t.runner.IsHealthy()
+// IsRunnerReady checks that the runner is ready
+func (t *Taskor) IsRunnerReady() error {
+	return t.runner.IsReady()
 }
 
 // StopWorker stop all goroutine and runner worker
