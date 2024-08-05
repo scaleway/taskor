@@ -3,9 +3,9 @@ package amqp
 import (
 	"errors"
 
+	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/scaleway/taskor/serializer"
 	"github.com/scaleway/taskor/task"
-	"github.com/streadway/amqp"
 )
 
 // Send send a new task in queue
