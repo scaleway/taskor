@@ -95,6 +95,24 @@ func (t *RunnerAmqp) Stop() error {
 	return nil
 }
 
+// IsHealthy checks that the runner connection and channel are set
+func (t *RunnerAmqp) IsHealthy() error {
+	if t.conn == nil {
+		return fmt.Errorf("connection is not established")
+	}
+	if t.conn.IsClosed() {
+		return fmt.Errorf("connection is closed")
+	}
+	if t.channel == nil {
+		return fmt.Errorf("channel is not established")
+	}
+	if t.channel.IsClosed() {
+		return fmt.Errorf("channel is closed")
+	}
+
+	return nil
+}
+
 func (t *RunnerAmqp) amqpConnect() error {
 	log.Info("Connection to RabbitMQ")
 	var err error
