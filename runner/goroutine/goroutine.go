@@ -42,6 +42,12 @@ func (g *Runner) Stop() error {
 	return nil
 }
 
+// IsReady checks that the runner is ready
+func (g *Runner) IsReady() error {
+	log.Warn("Method not implemented")
+	return nil
+}
+
 // Send send a new task to the pool
 func (g *Runner) Send(t *task.Task) error {
 	g.internalChanTaskToRun <- *t
