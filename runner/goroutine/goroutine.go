@@ -42,9 +42,8 @@ func (g *Runner) Stop() error {
 	return nil
 }
 
-// IsReady checks that the runner is ready
+// IsReady will always return nil for goroutine runner
 func (g *Runner) IsReady() error {
-	log.Warn("Method not implemented")
 	return nil
 }
 
