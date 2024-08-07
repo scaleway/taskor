@@ -5,35 +5,36 @@
 package mock
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	task "github.com/scaleway/taskor/task"
-	reflect "reflect"
 )
 
-// MockRunner is a mock of Runner interface
+// MockRunner is a mock of Runner interface.
 type MockRunner struct {
 	ctrl     *gomock.Controller
 	recorder *MockRunnerMockRecorder
 }
 
-// MockRunnerMockRecorder is the mock recorder for MockRunner
+// MockRunnerMockRecorder is the mock recorder for MockRunner.
 type MockRunnerMockRecorder struct {
 	mock *MockRunner
 }
 
-// NewMockRunner creates a new mock instance
+// NewMockRunner creates a new mock instance.
 func NewMockRunner(ctrl *gomock.Controller) *MockRunner {
 	mock := &MockRunner{ctrl: ctrl}
 	mock.recorder = &MockRunnerMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockRunner) EXPECT() *MockRunnerMockRecorder {
 	return m.recorder
 }
 
-// GetConcurrency mocks base method
+// GetConcurrency mocks base method.
 func (m *MockRunner) GetConcurrency() int {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetConcurrency")
@@ -41,13 +42,13 @@ func (m *MockRunner) GetConcurrency() int {
 	return ret0
 }
 
-// GetConcurrency indicates an expected call of GetConcurrency
+// GetConcurrency indicates an expected call of GetConcurrency.
 func (mr *MockRunnerMockRecorder) GetConcurrency() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConcurrency", reflect.TypeOf((*MockRunner)(nil).GetConcurrency))
 }
 
-// Init mocks base method
+// Init mocks base method.
 func (m *MockRunner) Init() error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Init")
@@ -55,25 +56,39 @@ func (m *MockRunner) Init() error {
 	return ret0
 }
 
-// Init indicates an expected call of Init
+// Init indicates an expected call of Init.
 func (mr *MockRunnerMockRecorder) Init() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Init", reflect.TypeOf((*MockRunner)(nil).Init))
 }
 
-// RunWorkerTaskAck mocks base method
+// IsReady mocks base method.
+func (m *MockRunner) IsReady() error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IsReady")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// IsReady indicates an expected call of IsReady.
+func (mr *MockRunnerMockRecorder) IsReady() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsReady", reflect.TypeOf((*MockRunner)(nil).IsReady))
+}
+
+// RunWorkerTaskAck mocks base method.
 func (m *MockRunner) RunWorkerTaskAck(arg0 <-chan task.Task) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "RunWorkerTaskAck", arg0)
 }
 
-// RunWorkerTaskAck indicates an expected call of RunWorkerTaskAck
+// RunWorkerTaskAck indicates an expected call of RunWorkerTaskAck.
 func (mr *MockRunnerMockRecorder) RunWorkerTaskAck(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RunWorkerTaskAck", reflect.TypeOf((*MockRunner)(nil).RunWorkerTaskAck), arg0)
 }
 
-// RunWorkerTaskProvider mocks base method
+// RunWorkerTaskProvider mocks base method.
 func (m *MockRunner) RunWorkerTaskProvider(arg0 chan task.Task, arg1 <-chan bool) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RunWorkerTaskProvider", arg0, arg1)
@@ -81,13 +96,13 @@ func (m *MockRunner) RunWorkerTaskProvider(arg0 chan task.Task, arg1 <-chan bool
 	return ret0
 }
 
-// RunWorkerTaskProvider indicates an expected call of RunWorkerTaskProvider
+// RunWorkerTaskProvider indicates an expected call of RunWorkerTaskProvider.
 func (mr *MockRunnerMockRecorder) RunWorkerTaskProvider(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RunWorkerTaskProvider", reflect.TypeOf((*MockRunner)(nil).RunWorkerTaskProvider), arg0, arg1)
 }
 
-// Send mocks base method
+// Send mocks base method.
 func (m *MockRunner) Send(arg0 *task.Task) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Send", arg0)
@@ -95,13 +110,13 @@ func (m *MockRunner) Send(arg0 *task.Task) error {
 	return ret0
 }
 
-// Send indicates an expected call of Send
+// Send indicates an expected call of Send.
 func (mr *MockRunnerMockRecorder) Send(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Send", reflect.TypeOf((*MockRunner)(nil).Send), arg0)
 }
 
-// Stop mocks base method
+// Stop mocks base method.
 func (m *MockRunner) Stop() error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Stop")
@@ -109,7 +124,7 @@ func (m *MockRunner) Stop() error {
 	return ret0
 }
 
-// Stop indicates an expected call of Stop
+// Stop indicates an expected call of Stop.
 func (mr *MockRunnerMockRecorder) Stop() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Stop", reflect.TypeOf((*MockRunner)(nil).Stop))

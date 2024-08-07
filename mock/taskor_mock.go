@@ -5,64 +5,37 @@
 package mock_taskor
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	handler "github.com/scaleway/taskor/handler"
 	task "github.com/scaleway/taskor/task"
-	reflect "reflect"
 )
 
-// MockTaskManager is a mock of TaskManager interface
+// MockTaskManager is a mock of TaskManager interface.
 type MockTaskManager struct {
 	ctrl     *gomock.Controller
 	recorder *MockTaskManagerMockRecorder
 }
 
-// MockTaskManagerMockRecorder is the mock recorder for MockTaskManager
+// MockTaskManagerMockRecorder is the mock recorder for MockTaskManager.
 type MockTaskManagerMockRecorder struct {
 	mock *MockTaskManager
 }
 
-// NewMockTaskManager creates a new mock instance
+// NewMockTaskManager creates a new mock instance.
 func NewMockTaskManager(ctrl *gomock.Controller) *MockTaskManager {
 	mock := &MockTaskManager{ctrl: ctrl}
 	mock.recorder = &MockTaskManagerMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockTaskManager) EXPECT() *MockTaskManagerMockRecorder {
 	return m.recorder
 }
 
-// Send mocks base method
-func (m *MockTaskManager) Send(task *task.Task) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Send", task)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Send indicates an expected call of Send
-func (mr *MockTaskManagerMockRecorder) Send(task interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Send", reflect.TypeOf((*MockTaskManager)(nil).Send), task)
-}
-
-// Handle mocks base method
-func (m *MockTaskManager) Handle(Definition *task.Definition) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Handle", Definition)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Handle indicates an expected call of Handle
-func (mr *MockTaskManagerMockRecorder) Handle(Definition interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Handle", reflect.TypeOf((*MockTaskManager)(nil).Handle), Definition)
-}
-
-// GetHandled mocks base method
+// GetHandled mocks base method.
 func (m *MockTaskManager) GetHandled() []*task.Definition {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetHandled")
@@ -70,39 +43,13 @@ func (m *MockTaskManager) GetHandled() []*task.Definition {
 	return ret0
 }
 
-// GetHandled indicates an expected call of GetHandled
+// GetHandled indicates an expected call of GetHandled.
 func (mr *MockTaskManagerMockRecorder) GetHandled() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHandled", reflect.TypeOf((*MockTaskManager)(nil).GetHandled))
 }
 
-// RunWorker mocks base method
-func (m *MockTaskManager) RunWorker() error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RunWorker")
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// RunWorker indicates an expected call of RunWorker
-func (mr *MockTaskManagerMockRecorder) RunWorker() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RunWorker", reflect.TypeOf((*MockTaskManager)(nil).RunWorker))
-}
-
-// StopWorker mocks base method
-func (m *MockTaskManager) StopWorker() {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "StopWorker")
-}
-
-// StopWorker indicates an expected call of StopWorker
-func (mr *MockTaskManagerMockRecorder) StopWorker() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StopWorker", reflect.TypeOf((*MockTaskManager)(nil).StopWorker))
-}
-
-// GetMetrics mocks base method
+// GetMetrics mocks base method.
 func (m *MockTaskManager) GetMetrics() handler.Metric {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMetrics")
@@ -110,8 +57,76 @@ func (m *MockTaskManager) GetMetrics() handler.Metric {
 	return ret0
 }
 
-// GetMetrics indicates an expected call of GetMetrics
+// GetMetrics indicates an expected call of GetMetrics.
 func (mr *MockTaskManagerMockRecorder) GetMetrics() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMetrics", reflect.TypeOf((*MockTaskManager)(nil).GetMetrics))
+}
+
+// Handle mocks base method.
+func (m *MockTaskManager) Handle(Definition *task.Definition) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Handle", Definition)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Handle indicates an expected call of Handle.
+func (mr *MockTaskManagerMockRecorder) Handle(Definition interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Handle", reflect.TypeOf((*MockTaskManager)(nil).Handle), Definition)
+}
+
+// IsRunnerReady mocks base method.
+func (m *MockTaskManager) IsRunnerReady() error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IsRunnerReady")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// IsRunnerReady indicates an expected call of IsRunnerReady.
+func (mr *MockTaskManagerMockRecorder) IsRunnerReady() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsRunnerReady", reflect.TypeOf((*MockTaskManager)(nil).IsRunnerReady))
+}
+
+// RunWorker mocks base method.
+func (m *MockTaskManager) RunWorker() error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RunWorker")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RunWorker indicates an expected call of RunWorker.
+func (mr *MockTaskManagerMockRecorder) RunWorker() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RunWorker", reflect.TypeOf((*MockTaskManager)(nil).RunWorker))
+}
+
+// Send mocks base method.
+func (m *MockTaskManager) Send(task *task.Task) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Send", task)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Send indicates an expected call of Send.
+func (mr *MockTaskManagerMockRecorder) Send(task interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Send", reflect.TypeOf((*MockTaskManager)(nil).Send), task)
+}
+
+// StopWorker mocks base method.
+func (m *MockTaskManager) StopWorker() {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "StopWorker")
+}
+
+// StopWorker indicates an expected call of StopWorker.
+func (mr *MockTaskManagerMockRecorder) StopWorker() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StopWorker", reflect.TypeOf((*MockTaskManager)(nil).StopWorker))
 }

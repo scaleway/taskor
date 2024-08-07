@@ -5,8 +5,8 @@ go 1.18
 require (
 	github.com/golang/mock v1.6.0
 	github.com/jpillora/backoff v1.0.0
+	github.com/rabbitmq/amqp091-go v1.10.0
 	github.com/sirupsen/logrus v1.8.1
-	github.com/streadway/amqp v1.0.0
 	github.com/stretchr/testify v1.2.2
 )
 

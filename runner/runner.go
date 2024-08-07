@@ -18,4 +18,6 @@ type Runner interface {
 	RunWorkerTaskAck(taskDone <-chan task.Task)
 	// GetConcurrency return concurrency (max number of workers) configured for runner (allows parallel task processing)
 	GetConcurrency() int
+	// IsReady checks that the runner is ready
+	IsReady() error
 }

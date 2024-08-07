@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
+	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/scaleway/taskor/log"
 	"github.com/scaleway/taskor/serializer"
 	"github.com/scaleway/taskor/task"
-	"github.com/streadway/amqp"
 )
 
 func (t *RunnerAmqp) createConsumer() <-chan amqp.Delivery {

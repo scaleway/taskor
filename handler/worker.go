@@ -84,6 +84,11 @@ func (t *Taskor) RunWorker() error {
 	return nil
 }
 
+// IsRunnerReady checks that the runner is ready
+func (t *Taskor) IsRunnerReady() error {
+	return t.runner.IsReady()
+}
+
 // StopWorker stop all goroutine and runner worker
 func (t *Taskor) StopWorker() {
 	t.workerStopMutex.Lock()

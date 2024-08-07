@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
+	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/scaleway/taskor/log"
 	"github.com/scaleway/taskor/serializer"
-	"github.com/streadway/amqp"
 )
 
 // Time to wait before retry after queue error
@@ -92,6 +92,24 @@ func (t *RunnerAmqp) Init() error {
 func (t *RunnerAmqp) Stop() error {
 	t.channel.Close()
 	t.conn.Close()
+	return nil
+}
+
+// IsReady checks that the runner connection and channel are set
+func (t *RunnerAmqp) IsReady() error {
+	if t.conn == nil {
+		return fmt.Errorf("connection is not established")
+	}
+	if t.conn.IsClosed() {
+		return fmt.Errorf("connection is closed")
+	}
+	if t.channel == nil {
+		return fmt.Errorf("channel is not established")
+	}
+	if t.channel.IsClosed() {
+		return fmt.Errorf("channel is closed")
+	}
+
 	return nil
 }
 

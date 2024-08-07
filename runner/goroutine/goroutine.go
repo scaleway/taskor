@@ -42,6 +42,11 @@ func (g *Runner) Stop() error {
 	return nil
 }
 
+// IsReady will always return nil for goroutine runner
+func (g *Runner) IsReady() error {
+	return nil
+}
+
 // Send send a new task to the pool
 func (g *Runner) Send(t *task.Task) error {
 	g.internalChanTaskToRun <- *t
